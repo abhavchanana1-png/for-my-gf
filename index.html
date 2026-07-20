@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>For Sofi ❤️</title>
+#puzzle{
+display:none;
+width:350px;
+height:350px;
+margin:20px auto;
+display:grid;
+grid-template-columns:repeat(5,1fr);
+}
 
-<style>
-
-const photo = document.getElementById("photo");
-
+.piece{
+width:70px;
+height:70px;
+background-image:url("photo.jpeg");
+background-size:350px 350px;
+}
+</style>
 body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
 .card{background:#ffffffcc;padding:30px;border-radius:20px;max-width:700px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
 h1{color:#ff4f8b}button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer}
-#photo,#counter,#quote,#forever,#musicButton,#final{display:none}img{
-    max-width:100%;
-    height:auto;
-    border-radius:16px;
-    margin-top:20px;
-}
+#photo,#counter,#quote,#forever,#musicButton,#final{display:none}img{max-width:100%;border-radius:16px;margin-top:20px}
 #hearts{position:fixed;inset:0;pointer-events:none}.heart{position:absolute;animation:f 7s linear forwards}@keyframes f{to{transform:translateY(-110vh);opacity:0}}
 </style></head><body>
 <div id="hearts"></div>
@@ -24,7 +30,7 @@ h1{color:#ff4f8b}button{padding:12px 24px;border:none;border-radius:30px;backgro
 <button id="open">Open ❤️</button>
 <div id="letter"></div>
 <button id="continue" style="display:none">Continue ❤️</button>
-<img id="photo" src="photo.jpeg">
+<div id="puzzle"></div>
 <p id="quote">These 100 days are just a small part of our long journey, and you're the only one I want to share it with.<br>Thank you for always choosing me. ❤️</p>
 <div id="counter"></div>
 <button id="musicButton">▶ Play Our Song</button>
@@ -36,6 +42,7 @@ h1{color:#ff4f8b}button{padding:12px 24px;border:none;border-radius:30px;backgro
 const openBtn = document.getElementById("open");
 const continueBtn = document.getElementById("continue");
 const letter = document.getElementById("letter");
+const photo = document.getElementById("photo");
 const quote = document.getElementById("quote");
 const counter = document.getElementById("counter");
 const musicButton = document.getElementById("musicButton");
@@ -69,11 +76,12 @@ openBtn.onclick = () => {
 };
 
 continueBtn.onclick = () => {
-    photo.style.display="block";
+    puzzle.style.display="grid";
     quote.style.display="block";
     counter.style.display="block";
     musicButton.style.display="inline-block";
     forever.style.display="block";
+    createPuzzle();
 };
 
 musicButton.onclick = () => {
@@ -106,9 +114,23 @@ function heart(){
     setTimeout(()=>h.remove(),7000);
 }
 
-setInterval(heart,250);
+setInterval(heart,250);const puzzle=document.getElementById("puzzle");
 
+function createPuzzle(){
 
+for(let i=0;i<25;i++){
 
+let piece=document.createElement("div");
+
+piece.className="piece";
+
+let x=(i%5)*25;
+let y=Math.floor(i/5)*25;
+
+piece.style.backgroundPosition=x+"% "+y+"%";
+
+puzzle.appendChild(piece);
+
+}
 
 }</script></body></html>
