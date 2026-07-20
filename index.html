@@ -110,6 +110,23 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 /* --- heart cursor trail --- */
 .trail-heart{position:fixed;pointer-events:none;font-size:16px;z-index:50;animation:trailFade .8s ease-out forwards;transform:translate(-50%,-50%)}
 @keyframes trailFade{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-80%) scale(.5)}}
+
+/* --- 52 reasons --- */
+#reasonsSection{display:none;margin-top:22px}
+#reasonsBtn{background:#fff;color:#ff4f8b;border:2px solid #ff9dbe}
+#reasonsBtn:hover{background:#fff0f5}
+#reasonCard{
+  display:none;
+  margin:14px auto 0;
+  max-width:420px;
+  background:linear-gradient(135deg,#fff5f8,#ffe9f1);
+  border:1px solid #ffd1e0;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 6px 20px rgba(255,79,139,.12);
+}
+#reasonNumber{font-size:12px;color:#c9558a;letter-spacing:1px;text-transform:uppercase}
+#reasonText{font-size:17px;color:#7a2848;margin:8px 0 0;line-height:1.5}
 </style></head><body>
 <div id="lockScreen">
   <h2>For Sofi ❤️</h2>
@@ -151,6 +168,14 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <p id="galleryTitle" style="display:none">Our Photos 📷</p>
 <div id="gallery" class="gallery"></div>
 <p id="galleryHint">Tap the + to add your own photos ❤️ (saved on this device/browser only)</p>
+
+<div id="reasonsSection">
+  <button id="reasonsBtn">Show me a reason ❤️</button>
+  <div id="reasonCard">
+    <div id="reasonNumber"></div>
+    <p id="reasonText"></p>
+  </div>
+</div>
 
 <div id="forever"><button id="foreverBtn">Forever ❤️</button></div>
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi ❤️<br>— Abhav</h2>
@@ -227,6 +252,11 @@ const galleryEl = document.getElementById("gallery");
 const galleryHint = document.getElementById("galleryHint");
 const forever = document.getElementById("forever");
 const foreverBtn = document.getElementById("foreverBtn");
+const reasonsSection = document.getElementById("reasonsSection");
+const reasonsBtn = document.getElementById("reasonsBtn");
+const reasonCard = document.getElementById("reasonCard");
+const reasonNumber = document.getElementById("reasonNumber");
+const reasonText = document.getElementById("reasonText");
 const final = document.getElementById("final");
 const puzzleContainer = document.getElementById("puzzleContainer");
 const puzzleEl = document.getElementById("puzzle");
@@ -353,8 +383,86 @@ function showRevealedContent(){
     reveal(anniversaryEl);
     reveal(musicRow);
     buildGallery();
+    reveal(reasonsSection);
     reveal(forever);
 }
+
+// ---------------- 52 reasons why I love you ----------------
+// PLACEHOLDER LIST — replace these with your actual 52 reasons.
+// Keep it as an array of strings, one reason per line.
+const reasons = [
+    `I love your sweet heart 💖`,
+    `I love the way you care about me`,
+    `I love the way you always listen to me`,
+    `I love the way you try to understand me when you have no clue what's happening`,
+    `I love the way how you see me`,
+    `I love how your calls make my day better`,
+    `I love the way you always want the best for me`,
+    `I love how you see me in places I can only imagine myself`,
+    `I love your sense of humour`,
+    `I love how comfortable I can be with you`,
+    `I love how you care about my little things`,
+    `I love how you are always on my side`,
+    `I love how supportive you are`,
+    `I love how you make me feel loved`,
+    `I love all the memories we made together`,
+    `I love every call we had together`,
+    `I love every "good morning" and "good night" text`,
+    `I love our inside jokes`,
+    `I love how you make me special`,
+    `I love how we fight arguments as a team`,
+    `I love how we can talk for hours`,
+    `I love every reel you have sent me`,
+    `I love every insta story you have about me`,
+    `I love how strong you are in tough situations`,
+    `I love how we can talk about everything`,
+    `I love how you can make hours feel like minutes`,
+    `I love how you complement me when I am looking the worst`,
+    `I love how you will always make time for me`,
+    `I love how you are willing to improve yourself for me`,
+    `I love dreaming about our future together`,
+    `I love how I am in your dreams`,
+    `I love when you get cute mad`,
+    `I love how you care about my feelings`,
+    `I love how you are my favourite person`,
+    `I love how much happiness you bring in my life`,
+    `I love how you trusted me since day one`,
+    `I love how you are still waiting for me :(`,
+    `I love your positive attitude`,
+    `I love how you fed me on our first date`,
+    `I love how you showed me how to buy flowers 😭`,
+    `I love every version of you`,
+    `I love how you are my safe space now`,
+    `I love imagining cute dates with you`,
+    `I love imagining all of my adventures with you`,
+    `I love how your family always welcomed me`,
+    `I love how you love me for who I am`,
+    `I love how you make me a better person everyday`,
+    `I love how you still have a crush on me`,
+    `I love how you make me look forward to every day because I know I'll get to talk to you.`,
+    `I love how you are always going to be my favourite notification`,
+    `I love how being with you feels natural and meant to be`,
+    `I love you just because you are you`
+];
+let reasonsBag = [];
+function nextReason(){
+    if(reasonsBag.length === 0){
+        reasonsBag = reasons.map((_, idx) => idx);
+        // shuffle
+        for(let idx=reasonsBag.length-1; idx>0; idx--){
+            const j = Math.floor(Math.random()*(idx+1));
+            [reasonsBag[idx],reasonsBag[j]] = [reasonsBag[j],reasonsBag[idx]];
+        }
+    }
+    const i = reasonsBag.pop();
+    reasonNumber.textContent = "Reason #" + (i+1) + " of " + reasons.length;
+    reasonText.textContent = reasons[i];
+    reveal(reasonCard);
+}
+reasonsBtn.onclick = () => {
+    nextReason();
+    reasonsBtn.textContent = "Show me another ❤️";
+};
 
 function launchConfetti(count){
     const colors = ["#ff4f8b","#ff8fb4","#ffd1dc","#ffb6c1","#fff0f5","#ff6f9f"];
@@ -465,7 +573,7 @@ setInterval(updAnniversary,60000);
 // Built-in: drop photo2.jpeg, photo3.jpeg, etc. next to this file and they show up automatically.
 // On-site uploads: visitors can also tap "+" to add photos directly in the browser —
 // those are saved to this device/browser only (via localStorage), not uploaded anywhere.
-const galleryFiles = ["photo.jpeg","photo2.jpeg","photo3.jpeg","photo4.jpeg","photo5.jpeg","photo6.jpeg"];
+const galleryFiles = ["photo.jpeg","photo2.jpeg","photo3.jpeg","photo4.jpeg","photo5.jpeg","photo6.jpeg","photo7.jpeg","photo8.jpeg","photo9.jpeg","photo10.jpeg","photo11.jpeg","photo12.jpeg"];
 const CUSTOM_KEY = "sofiCustomPhotos";
 const HIDDEN_KEY = "sofiHiddenBuiltins";
 let galleryBuilt = false;
