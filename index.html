@@ -3,20 +3,8 @@
 <title>For Sofi ❤️</title>
 
 <style>
-#puzzle{
-display:none;
-width:350px;
-height:350px;
-margin:20px auto;
-grid-template-columns:repeat(5,1fr);
-}
 
-.piece{
-width:70px;
-height:70px;
-background-image:url("photo.jpeg");
-background-size:350px 350px;
-}
+const photo = document.getElementById("photo");
 
 body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
 .card{background:#ffffffcc;padding:30px;border-radius:20px;max-width:700px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
@@ -31,7 +19,7 @@ h1{color:#ff4f8b}button{padding:12px 24px;border:none;border-radius:30px;backgro
 <button id="open">Open ❤️</button>
 <div id="letter"></div>
 <button id="continue" style="display:none">Continue ❤️</button>
-<div id="puzzle"></div>
+<img id="photo" src="photo.jpeg">
 <p id="quote">These 100 days are just a small part of our long journey, and you're the only one I want to share it with.<br>Thank you for always choosing me. ❤️</p>
 <div id="counter"></div>
 <button id="musicButton">▶ Play Our Song</button>
@@ -50,7 +38,6 @@ const song = document.getElementById("song");
 const forever = document.getElementById("forever");
 const foreverBtn = document.getElementById("foreverBtn");
 const final = document.getElementById("final");
-const puzzle = document.getElementById("puzzle");
 
 const msg=`Hi Sofi ❤️
 
@@ -77,12 +64,11 @@ openBtn.onclick = () => {
 };
 
 continueBtn.onclick = () => {
-    puzzle.style.display="grid";
+    photo.style.display="block";
     quote.style.display="block";
     counter.style.display="block";
     musicButton.style.display="inline-block";
     forever.style.display="block";
-    createPuzzle();
 };
 
 musicButton.onclick = () => {
@@ -118,21 +104,6 @@ function heart(){
 setInterval(heart,250);
 
 
-function createPuzzle(){
 
-for(let i=0;i<25;i++){
-
-let piece=document.createElement("div");
-
-piece.className="piece";
-
-let x = (i % 5) * 70;
-let y = Math.floor(i / 5) * 70;
-
-piece.style.backgroundPosition = `-${x}px -${y}px`;
-
-puzzle.appendChild(piece);
-
-}
 
 }</script></body></html>
