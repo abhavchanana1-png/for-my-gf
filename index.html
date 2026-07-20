@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>For Sofi ❤️</title>
+
+<style>
+
+const photo = document.getElementById("photo");
+
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
+.card{background:#ffffffcc;padding:30px;border-radius:20px;max-width:700px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+h1{color:#ff4f8b}button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer}
+#photo,#counter,#quote,#forever,#musicButton,#final{display:none}img{max-width:100%;border-radius:16px;margin-top:20px}
+#hearts{position:fixed;inset:0;pointer-events:none}.heart{position:absolute;animation:f 7s linear forwards}@keyframes f{to{transform:translateY(-110vh);opacity:0}}
+</style></head><body>
+<div id="hearts"></div>
+<div class="card">
+<h1>For Sofi ❤️</h1>
+<p>A little surprise made with love.</p>
+<button id="open">Open ❤️</button>
+<div id="letter"></div>
+<button id="continue" style="display:none">Continue ❤️</button>
+<img id="photo" src="photo.jpeg">
+<p id="quote">These 100 days are just a small part of our long journey, and you're the only one I want to share it with.<br>Thank you for always choosing me. ❤️</p>
+<div id="counter"></div>
+<button id="musicButton">▶ Play Our Song</button>
+<audio id="song"><source src="music.mp3" type="audio/mpeg"></audio>
+<div id="forever"><button id="foreverBtn">Forever ❤️</button></div>
+<h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi ❤️<br>— Abhav</h2>
+</div>
+<script>
+const openBtn = document.getElementById("open");
+const continueBtn = document.getElementById("continue");
+const letter = document.getElementById("letter");
+const quote = document.getElementById("quote");
+const counter = document.getElementById("counter");
+const musicButton = document.getElementById("musicButton");
+const song = document.getElementById("song");
+const forever = document.getElementById("forever");
+const foreverBtn = document.getElementById("foreverBtn");
+const final = document.getElementById("final");
+
+const msg=`Hi Sofi ❤️
+
+I made this little surprise just for you.
+
+I hope it makes you smile.
+
+Ready?`;
+
+let i = 0;
+
+openBtn.onclick = () => {
+    openBtn.style.display = "none";
+
+    function t(){
+        if(i < msg.length){
+            letter.innerHTML += msg[i++];
+            setTimeout(t,40);
+        } else {
+            continueBtn.style.display = "inline-block";
+        }
+    }
+    t();
+};
+
+continueBtn.onclick = () => {
+    photo.style.display="block";
+    quote.style.display="block";
+    counter.style.display="block";
+    musicButton.style.display="inline-block";
+    forever.style.display="block";
+};
+
+musicButton.onclick = () => {
+    song.play();
+};
+
+foreverBtn.onclick = () => {
+    final.style.display="block";
+};
+
+const s = new Date("2026-04-11");
+
+function upd(){
+    let d = Math.floor((Date.now()-s)/(1000*60*60*24));
+    counter.innerHTML =
+    "❤️ Together since 11 April 2026 ❤️<br><b>"+d+"</b> beautiful days together";
+}
+
+upd();
+setInterval(upd,60000);
+
+function heart(){
+    let h=document.createElement("div");
+    h.className="heart";
+    h.textContent=Math.random()>.5?"❤️":"💗";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="-20px";
+    h.style.fontSize=(16+Math.random()*18)+"px";
+    document.getElementById("hearts").appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+}
+
+setInterval(heart,250);
+
+
+
+
+}</script></body></html>
