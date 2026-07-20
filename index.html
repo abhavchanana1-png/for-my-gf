@@ -65,7 +65,28 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 .gallery-add{width:100px;height:100px;border:2px dashed #ff9dbe;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#ff6f9f;cursor:pointer;flex:0 0 auto;background:#fff8fb}
 .gallery-add:hover{background:#ffeef5}
 #galleryHint{font-size:12px;color:#c9558a;margin-top:6px}
+
+/* --- lock screen --- */
+#lockScreen{position:fixed;inset:0;background:linear-gradient(#ffeef5,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:20px;text-align:center}
+#lockScreen h2{color:#ff4f8b;margin-bottom:6px}
+#lockScreen p{color:#c9558a;margin-top:0;font-size:14px}
+#pinInput{padding:12px;border-radius:12px;border:2px solid #ff9dbe;font-size:22px;text-align:center;letter-spacing:6px;width:160px;outline:none}
+#pinInput:focus{border-color:#ff4f8b}
+#pinError{color:#e0356b;font-size:13px;min-height:18px;margin-top:8px}
+.shake{animation:shake .4s}
+@keyframes shake{10%,90%{transform:translateX(-4px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
+
+/* --- heart cursor trail --- */
+.trail-heart{position:fixed;pointer-events:none;font-size:16px;z-index:50;animation:trailFade .8s ease-out forwards;transform:translate(-50%,-50%)}
+@keyframes trailFade{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-80%) scale(.5)}}
 </style></head><body>
+<div id="lockScreen">
+  <h2>For Sofi ❤️</h2>
+  <p>Enter the PIN to open your surprise</p>
+  <input id="pinInput" type="tel" inputmode="numeric" maxlength="6" placeholder="••••">
+  <button id="pinSubmit" style="margin-top:12px">Unlock ❤️</button>
+  <div id="pinError"></div>
+</div>
 <div id="hearts"></div>
 <div id="confetti"></div>
 <div class="card">
@@ -82,6 +103,7 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
     <div id="hintImg"></div>
     <div id="puzzle"></div>
   </div>
+  <button id="skipPuzzle" style="background:transparent;color:#c9558a;box-shadow:none;font-size:13px;padding:6px 10px">Skip puzzle</button>
 </div>
 
 <img id="photo" src="photo.jpeg">
@@ -102,6 +124,61 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi ❤️<br>— Abhav</h2>
 </div>
 <script>
+// ---------------- PIN lock screen ----------------
+// Change SITE_PIN to whatever you want her to enter. Heads up: since this is a
+// plain static site, this is a fun soft gate (keeps casual visitors out) —
+// not real security, since the PIN is visible in the page source.
+const SITE_PIN = "110426";
+const UNLOCK_KEY = "sofiUnlocked";
+const lockScreen = document.getElementById("lockScreen");
+const pinInput = document.getElementById("pinInput");
+const pinSubmit = document.getElementById("pinSubmit");
+const pinError = document.getElementById("pinError");
+
+function tryUnlock(){
+    if(pinInput.value === SITE_PIN){
+        try { localStorage.setItem(UNLOCK_KEY, "true"); } catch(e){}
+        lockScreen.style.display = "none";
+    } else {
+        pinError.textContent = "Not quite — try again ❤️";
+        lockScreen.classList.remove("shake");
+        void lockScreen.offsetWidth;
+        lockScreen.classList.add("shake");
+        pinInput.value = "";
+        pinInput.focus();
+    }
+}
+pinSubmit.onclick = tryUnlock;
+pinInput.addEventListener("keydown", (e) => { if(e.key === "Enter") tryUnlock(); });
+try {
+    if(localStorage.getItem(UNLOCK_KEY) === "true") lockScreen.style.display = "none";
+} catch(e){}
+
+// ---------------- Heart cursor trail ----------------
+let lastTrail = 0;
+function spawnTrailHeart(x, y){
+    const h = document.createElement("div");
+    h.className = "trail-heart";
+    h.textContent = Math.random() > 0.5 ? "💘" : "💖";
+    h.style.left = x + "px";
+    h.style.top = y + "px";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 800);
+}
+document.addEventListener("mousemove", (e) => {
+    const now = Date.now();
+    if(now - lastTrail < 60) return;
+    lastTrail = now;
+    spawnTrailHeart(e.clientX, e.clientY);
+});
+document.addEventListener("touchmove", (e) => {
+    const now = Date.now();
+    if(now - lastTrail < 60) return;
+    lastTrail = now;
+    const t = e.touches[0];
+    if(t) spawnTrailHeart(t.clientX, t.clientY);
+}, {passive:true});
+
 const openBtn = document.getElementById("open");
 const continueBtn = document.getElementById("continue");
 const letter = document.getElementById("letter");
@@ -160,6 +237,11 @@ continueBtn.onclick = () => {
     continueBtn.style.display = "none";
     reveal(puzzleContainer);
     startPuzzle();
+};
+
+document.getElementById("skipPuzzle").onclick = () => {
+    puzzleContainer.style.display = "none";
+    showRevealedContent();
 };
 
 // ---------------- Jigsaw puzzle ----------------
@@ -228,14 +310,18 @@ function onPuzzleSolved(){
     playSuccessChime();
     setTimeout(() => {
         puzzleContainer.style.display = "none";
-        reveal(photo);
-        reveal(quote);
-        reveal(counter);
-        reveal(anniversaryEl);
-        reveal(musicRow);
-        buildGallery();
-        reveal(forever);
+        showRevealedContent();
     }, 900);
+}
+
+function showRevealedContent(){
+    reveal(photo);
+    reveal(quote);
+    reveal(counter);
+    reveal(anniversaryEl);
+    reveal(musicRow);
+    buildGallery();
+    reveal(forever);
 }
 
 function launchConfetti(count){
@@ -311,11 +397,17 @@ foreverBtn.onclick = () => {
     playSuccessChime();
 };
 
-// ---------------- Day counter (auto-increments every day) ----------------
+// ---------------- Day counter (auto-increments every day, Spain time) ----------------
+// Uses Europe/Madrid time instead of the visitor's own device timezone, so the
+// day rolls over at Spanish midnight no matter where the page is opened from.
+function getSpainNow(){
+    return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+}
+
 const s = new Date("2026-04-11");
 
 function upd(){
-    let d = Math.floor((Date.now()-s)/(1000*60*60*24));
+    let d = Math.floor((getSpainNow()-s)/(1000*60*60*24));
     dayWord.textContent = d;
     counter.innerHTML =
     "❤️ Together since 11 April 2026 ❤️<br><b>"+d+"</b> beautiful days together";
@@ -324,9 +416,9 @@ function upd(){
 upd();
 setInterval(upd,60000);
 
-// ---------------- Countdown to next anniversary ----------------
+// ---------------- Countdown to next anniversary (Spain time) ----------------
 function updAnniversary(){
-    const now = new Date();
+    const now = getSpainNow();
     let next = new Date(now.getFullYear(), 3, 11); // April is month index 3
     if(now > next){ next = new Date(now.getFullYear()+1, 3, 11); }
     const diffMs = next - now;
