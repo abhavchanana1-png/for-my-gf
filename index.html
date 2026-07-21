@@ -130,6 +130,21 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   transition:opacity .8s ease;
 }
 .carousel img.active{opacity:1}
+.carouselWrap{position:relative;max-width:420px;margin:0 auto}
+.carouselArrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:34px;height:34px;border-radius:50%;
+  background:#ffffffcc;color:#ff4f8b;border:none;
+  font-size:14px;line-height:1;padding:0;margin:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);
+  transition:transform .15s ease, background .15s ease;
+  z-index:2;
+}
+.carouselArrow:hover{background:#fff;transform:translateY(-50%) scale(1.08)}
+.carouselArrow:active{transform:translateY(-50%) scale(.94)}
+.carouselArrow-left{left:8px}
+.carouselArrow-right{right:8px}
 #carouselDots{display:flex;justify-content:center;gap:6px;margin-top:10px}
 .carouselDot{width:7px;height:7px;border-radius:50%;background:#ffd1e0;cursor:pointer;transition:background .2s,transform .2s}
 .carouselDot.active{background:#ff4f8b;transform:scale(1.25)}
@@ -233,7 +248,7 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 </div>
 <div id="doggoBubble">
   <p>Fluffy says:</p>
-  <p class="barkWord">barkk barkkkk 🐾</p>
+  <p class="barkWord">wof wofff 🐾</p>
 </div>
 <div class="card">
 <h1>For Sofi 💘</h1>
@@ -274,7 +289,11 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <audio id="song"></audio>
 
 <p id="galleryTitle" style="display:none">Our Photos 📷</p>
-<div id="gallery" class="carousel"></div>
+<div class="carouselWrap">
+  <div id="gallery" class="carousel"></div>
+  <button id="carouselPrev" class="carouselArrow carouselArrow-left" style="display:none" aria-label="Previous photo">&#10094;</button>
+  <button id="carouselNext" class="carouselArrow carouselArrow-right" style="display:none" aria-label="Next photo">&#10095;</button>
+</div>
 <div id="carouselDots" style="display:none"></div>
 
 <div id="reasonsSection">
@@ -752,6 +771,16 @@ setInterval(updAnniversary,60000);
 // and they'll automatically join the rotation.
 const galleryFiles = ["photo.jpeg","photo2.jpeg","photo3.jpeg","photo4.jpeg","photo5.jpeg","photo6.jpeg","photo7.jpeg","photo8.jpeg","photo9.jpeg","photo10.jpeg","photo11.jpeg","photo12.jpeg"];
 const carouselDots = document.getElementById("carouselDots");
+const carouselPrev = document.getElementById("carouselPrev");
+const carouselNext = document.getElementById("carouselNext");
+carouselPrev.onclick = () => {
+    goToSlide((carouselIndex - 1 + photoCount) % photoCount);
+    restartCarouselTimer();
+};
+carouselNext.onclick = () => {
+    goToSlide((carouselIndex + 1) % photoCount);
+    restartCarouselTimer();
+};
 let galleryBuilt = false;
 let carouselIndex = 0;
 let carouselTimer = null;
@@ -795,6 +824,8 @@ function startCarousel(photos){
     reveal(galleryEl, "block");
     if(photos.length > 1){
         reveal(carouselDots, "flex");
+        reveal(carouselPrev, "flex");
+        reveal(carouselNext, "flex");
         restartCarouselTimer();
         setupSwipe();
     }
