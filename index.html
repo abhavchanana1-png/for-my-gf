@@ -173,6 +173,10 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   </div>
 </div>
 
+<div id="calendarLink" style="display:none;margin-top:18px">
+  <a href="memories.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Our Memory Calendar 📅</a>
+</div>
+
 <div id="forever"><button id="foreverBtn">Forever ❤️</button></div>
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi ❤️<br>— Abhav</h2>
 </div>
@@ -382,6 +386,7 @@ function showRevealedContent(){
     reveal(musicRow);
     buildGallery();
     reveal(reasonsSection);
+    reveal(document.getElementById("calendarLink"));
     reveal(forever);
 }
 
