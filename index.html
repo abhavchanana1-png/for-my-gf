@@ -56,46 +56,34 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 /* --- anniversary countdown --- */
 #anniversary{font-size:14px;color:#c9558a;margin-top:4px}
 
-/* --- gallery --- */
-#galleryTitle{font-size:15px;color:#ff4f8b;font-weight:bold;margin:22px 0 0}
-.gallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(88px,1fr));
-  gap:10px;
-  max-width:480px;
-  margin:10px auto 0;
-  padding:14px;
+/* --- rotating photo carousel --- */
+#galleryTitle{font-size:15px;color:#ff4f8b;font-weight:bold;margin:22px 0 8px}
+.carousel{
+  position:relative;
+  max-width:420px;
+  aspect-ratio:1/1;
+  margin:0 auto;
+  border-radius:18px;
+  overflow:hidden;
   background:#fffdfe;
   border:1px solid #ffe1ec;
-  border-radius:18px;
   box-shadow:0 4px 16px rgba(255,79,139,.08);
 }
-.gallery-item{position:relative}
-.gallery-item img{
+.carousel img{
+  position:absolute;
+  inset:0;
   width:100%;
-  aspect-ratio:1/1;
+  height:100%;
   object-fit:cover;
-  border-radius:12px;
-  cursor:pointer;
-  display:block;
+  border-radius:0;
   margin-top:0;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-  transition:transform .2s, box-shadow .2s;
+  opacity:0;
+  transition:opacity .8s ease;
 }
-.gallery-item img:hover{transform:scale(1.04);box-shadow:0 4px 12px rgba(0,0,0,.14)}
-.gallery-item .del{
-  position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;
-  background:#fff;color:#ff4f8b;border:1px solid #ffd1e0;font-size:12px;line-height:18px;
-  padding:0;margin:0;cursor:pointer;opacity:0;transition:opacity .15s;box-shadow:0 1px 4px rgba(0,0,0,.15)
-}
-.gallery-item:hover .del{opacity:1}
-.gallery-add{
-  aspect-ratio:1/1;border:1.5px dashed #ffbdd4;border-radius:12px;display:flex;
-  align-items:center;justify-content:center;font-size:26px;color:#ff9dbe;cursor:pointer;
-  background:#fff;transition:background .15s,border-color .15s
-}
-.gallery-add:hover{background:#fff0f5;border-color:#ff6f9f;color:#ff6f9f}
-#galleryHint{font-size:11px;color:#c9558a;opacity:.8;margin-top:8px}
+.carousel img.active{opacity:1}
+#carouselDots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.carouselDot{width:7px;height:7px;border-radius:50%;background:#ffd1e0;cursor:pointer;transition:background .2s,transform .2s}
+.carouselDot.active{background:#ff4f8b;transform:scale(1.25)}
 
 /* --- lock screen --- */
 #lockScreen{position:fixed;inset:0;background:linear-gradient(#ffeef5,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:20px;text-align:center}
@@ -166,8 +154,8 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <audio id="song"><source src="music.mp3" type="audio/mpeg"></audio>
 
 <p id="galleryTitle" style="display:none">Our Photos 📷</p>
-<div id="gallery" class="gallery"></div>
-<p id="galleryHint">Tap the + to add your own photos ❤️ (saved on this device/browser only)</p>
+<div id="gallery" class="carousel"></div>
+<div id="carouselDots" style="display:none"></div>
 
 <div id="reasonsSection">
   <button id="reasonsBtn">Show me a reason ❤️</button>
@@ -249,7 +237,6 @@ const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const song = document.getElementById("song");
 const galleryEl = document.getElementById("gallery");
-const galleryHint = document.getElementById("galleryHint");
 const forever = document.getElementById("forever");
 const foreverBtn = document.getElementById("foreverBtn");
 const reasonsSection = document.getElementById("reasonsSection");
@@ -569,139 +556,66 @@ function updAnniversary(){
 updAnniversary();
 setInterval(updAnniversary,60000);
 
-// ---------------- Photo gallery (built-in files + on-site uploads) ----------------
-// Built-in: drop photo2.jpeg, photo3.jpeg, etc. next to this file and they show up automatically.
-// On-site uploads: visitors can also tap "+" to add photos directly in the browser —
-// those are saved to this device/browser only (via localStorage), not uploaded anywhere.
+// ---------------- Rotating photo album ----------------
+// Drop photo2.jpeg, photo3.jpeg, etc. (up to photo12.jpeg) next to this file
+// and they'll automatically join the rotation.
 const galleryFiles = ["photo.jpeg","photo2.jpeg","photo3.jpeg","photo4.jpeg","photo5.jpeg","photo6.jpeg","photo7.jpeg","photo8.jpeg","photo9.jpeg","photo10.jpeg","photo11.jpeg","photo12.jpeg"];
-const CUSTOM_KEY = "sofiCustomPhotos";
-const HIDDEN_KEY = "sofiHiddenBuiltins";
+const carouselDots = document.getElementById("carouselDots");
 let galleryBuilt = false;
-
-function getCustomPhotos(){
-    try {
-        return JSON.parse(localStorage.getItem(CUSTOM_KEY) || "[]");
-    } catch(e){ return []; }
-}
-function saveCustomPhotos(arr){
-    try {
-        localStorage.setItem(CUSTOM_KEY, JSON.stringify(arr));
-        return true;
-    } catch(e){
-        return false; // storage full
-    }
-}
-function getHiddenBuiltins(){
-    try {
-        return JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]");
-    } catch(e){ return []; }
-}
-function saveHiddenBuiltins(arr){
-    try { localStorage.setItem(HIDDEN_KEY, JSON.stringify(arr)); } catch(e){}
-}
-
-// isCustom: true = an uploaded photo (removing deletes it from storage)
-// isCustom: false = a built-in photo.jpeg/photo2.jpeg/etc (removing just hides
-// it in this browser going forward — the file itself stays on the site)
-function addGalleryItem(src, isCustom, refIndex){
-    const item = document.createElement("div");
-    item.className = "gallery-item";
-    const img = document.createElement("img");
-    img.src = src;
-    img.onclick = () => { photo.src = src; };
-    item.appendChild(img);
-
-    const del = document.createElement("button");
-    del.className = "del";
-    del.textContent = "×";
-    del.title = "Remove photo";
-    del.onclick = (e) => {
-        e.stopPropagation();
-        if(isCustom){
-            const arr = getCustomPhotos();
-            arr.splice(refIndex, 1);
-            saveCustomPhotos(arr);
-        } else {
-            const hidden = getHiddenBuiltins();
-            if(!hidden.includes(src)) hidden.push(src);
-            saveHiddenBuiltins(hidden);
-        }
-        rebuildGallery();
-    };
-    item.appendChild(del);
-
-    galleryEl.insertBefore(item, galleryEl.querySelector(".gallery-add"));
-}
-
-function addUploadTile(){
-    const tile = document.createElement("label");
-    tile.className = "gallery-add";
-    tile.textContent = "+";
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.multiple = true;
-    input.style.display = "none";
-    input.addEventListener("change", (e) => handleUpload(e.target.files));
-    tile.appendChild(input);
-    galleryEl.appendChild(tile);
-}
-
-function handleUpload(files){
-    Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-                // downscale so localStorage doesn't fill up
-                const maxDim = 900;
-                let w = img.width, h = img.height;
-                if(w > maxDim || h > maxDim){
-                    if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
-                    else { w = Math.round(w * maxDim / h); h = maxDim; }
-                }
-                const canvas = document.createElement("canvas");
-                canvas.width = w; canvas.height = h;
-                canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-                const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-                const arr = getCustomPhotos();
-                arr.push(dataUrl);
-                const ok = saveCustomPhotos(arr);
-                if(!ok){
-                    galleryHint.textContent = "Storage is full — try removing an older photo first.";
-                } else {
-                    rebuildGallery();
-                }
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function rebuildGallery(){
-    galleryEl.innerHTML = "";
-    const hidden = getHiddenBuiltins();
-    galleryFiles.forEach(src => {
-        if(hidden.includes(src)) return;
-        const testImg = new Image();
-        testImg.onload = () => addGalleryItemSorted(src, false);
-        testImg.src = src;
-    });
-    getCustomPhotos().forEach((dataUrl, idx) => addGalleryItem(dataUrl, true, idx));
-    if(!galleryEl.querySelector(".gallery-add")) addUploadTile();
-}
-// built-in photos load asynchronously, so keep the add-tile pinned at the end
-function addGalleryItemSorted(src, isCustom){
-    addGalleryItem(src, isCustom);
-}
+let carouselIndex = 0;
+let carouselTimer = null;
 
 function buildGallery(){
     if(galleryBuilt) return;
     galleryBuilt = true;
-    rebuildGallery();
+
+    const found = [];
+    let checked = 0;
+    galleryFiles.forEach(src => {
+        const testImg = new Image();
+        testImg.onload = () => { found.push(src); done(); };
+        testImg.onerror = () => { done(); };
+        testImg.src = src;
+        function done(){
+            checked++;
+            if(checked === galleryFiles.length) startCarousel(found);
+        }
+    });
+}
+
+function startCarousel(photos){
+    if(photos.length === 0) return;
+
+    photos.forEach((src, idx) => {
+        const img = document.createElement("img");
+        img.src = src;
+        if(idx === 0) img.classList.add("active");
+        galleryEl.appendChild(img);
+
+        const dot = document.createElement("div");
+        dot.className = "carouselDot" + (idx === 0 ? " active" : "");
+        dot.onclick = () => goToSlide(idx);
+        carouselDots.appendChild(dot);
+    });
+
     reveal(document.getElementById("galleryTitle"));
-    reveal(galleryEl, "grid");
+    reveal(galleryEl, "block");
+    if(photos.length > 1){
+        reveal(carouselDots, "flex");
+        carouselTimer = setInterval(() => {
+            goToSlide((carouselIndex + 1) % photos.length);
+        }, 4000);
+    }
+}
+
+function goToSlide(idx){
+    const imgs = galleryEl.querySelectorAll("img");
+    const dots = carouselDots.querySelectorAll(".carouselDot");
+    imgs[carouselIndex].classList.remove("active");
+    dots[carouselIndex].classList.remove("active");
+    carouselIndex = idx;
+    imgs[carouselIndex].classList.add("active");
+    dots[carouselIndex].classList.add("active");
 }
 
 function heart(){
