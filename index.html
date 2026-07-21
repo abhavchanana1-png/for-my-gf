@@ -5,14 +5,52 @@
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
-.card{font-family:'Quicksand',Arial,sans-serif;background:#ffffffcc;padding:30px;border-radius:20px;max-width:700px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal}button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer;margin:6px;font-family:'Quicksand',Arial,sans-serif;font-weight:600}
+.card{font-family:'Quicksand',Arial,sans-serif;background:#ffffffcc;padding:30px;border-radius:20px;max-width:700px;width:92%;box-sizing:border-box;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal}button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer;margin:6px;font-family:'Quicksand',Arial,sans-serif;font-weight:600;transition:transform .15s ease, box-shadow .15s ease}
+button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(255,79,139,.3)}
+button:active{transform:translateY(0) scale(.96)}
+.card{animation:cardIn .7s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+#open{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 #photo,#counter,#anniversary,#quote,#forever,#musicRow,#final,#puzzleContainer,#gallery{display:none}
 img{max-width:100%;border-radius:16px;margin-top:20px}
 #hearts{position:fixed;inset:0;pointer-events:none}.heart{position:absolute;animation:f 7s linear forwards}@keyframes f{to{transform:translateY(-110vh);opacity:0}}
 #confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
 .confetti-piece{position:absolute;top:-20px;opacity:.95;animation:cf linear forwards}
 @keyframes cf{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* --- jellyfish easter egg --- */
+#jellyfish{
+  position:fixed;bottom:18px;right:18px;cursor:pointer;z-index:40;
+  animation:jellyFloat 3.5s ease-in-out infinite;user-select:none;
+  filter:drop-shadow(0 3px 6px rgba(255,79,139,.35));
+}
+@keyframes jellyFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+#jellyBubble{
+  display:none;position:fixed;bottom:60px;right:16px;z-index:41;
+  background:#fff;border:1px solid #ffd1e0;border-radius:16px;padding:12px 18px;
+  box-shadow:0 6px 18px rgba(255,79,139,.2);text-align:center;font-family:'Quicksand',Arial,sans-serif;
+  animation:jellyPop .3s ease both;
+}
+@keyframes jellyPop{from{opacity:0;transform:scale(.7) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#jellyBubble p{margin:0;color:#7a2848;font-size:15px}
+#jellyBubble .jellyWord{color:#ff4f8b;font-weight:bold;font-size:19px;margin-top:2px}
+
+/* --- golden retriever easter egg --- */
+#doggo{
+  position:fixed;top:75%;left:14px;margin-top:-28px;cursor:pointer;z-index:40;
+  animation:doggoBounce 2.2s ease-in-out infinite;user-select:none;
+  filter:drop-shadow(0 3px 6px rgba(224,168,85,.4));
+}
+@keyframes doggoBounce{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-6px) rotate(-6deg)}75%{transform:translateY(-6px) rotate(6deg)}}
+#doggoBubble{
+  display:none;position:fixed;top:calc(75% - 90px);left:12px;z-index:41;
+  background:#fff;border:1px solid #ffe0b0;border-radius:16px;padding:12px 18px;
+  box-shadow:0 6px 18px rgba(224,168,85,.25);text-align:center;font-family:'Quicksand',Arial,sans-serif;
+  animation:jellyPop .3s ease both;
+}
+#doggoBubble p{margin:0;color:#7a2848;font-weight:bold;font-size:16px}
 
 /* --- fade-in reveal --- */
 .fade-in{animation:fadeIn .8s ease both}
@@ -78,6 +116,7 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   background:#fffdfe;
   border:1px solid #ffe1ec;
   box-shadow:0 4px 16px rgba(255,79,139,.08);
+  touch-action:pan-y;
 }
 .carousel img{
   position:absolute;
@@ -125,6 +164,18 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 }
 #reasonNumber{font-size:12px;color:#c9558a;letter-spacing:1px;text-transform:uppercase}
 #reasonText{font-size:17px;color:#7a2848;margin:8px 0 0;line-height:1.5}
+
+/* --- mobile tweaks --- */
+@media (max-width:480px){
+  body{padding:16px 0;box-sizing:border-box;align-items:flex-start}
+  .card{padding:20px 16px;width:94%}
+  h1{font-size:22px}
+  button{padding:10px 18px;font-size:14px}
+  #jellyfish svg{width:22px;height:22px}
+  #doggo svg{width:30px;height:43px}
+  #jellyBubble,#doggoBubble{padding:10px 14px}
+  #pinInput{width:130px;font-size:18px}
+}
 </style></head><body>
 <div id="lockScreen">
   <h2>For Sofi 💘</h2>
@@ -135,6 +186,55 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 </div>
 <div id="hearts"></div>
 <div id="confetti"></div>
+<div id="jellyfish" title="?">
+  <svg viewBox="0 0 60 60" width="28" height="28">
+    <ellipse cx="30" cy="24" rx="20" ry="16" fill="#ff8fb4"/>
+    <path d="M10 24 a20 16 0 0 1 40 0 Z" fill="#ff6f9f"/>
+    <circle cx="22" cy="21" r="2.4" fill="#7a2848"/>
+    <circle cx="38" cy="21" r="2.4" fill="#7a2848"/>
+    <path d="M24 28 q6 4 12 0" stroke="#7a2848" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M18 36 q-3 8 0 16" stroke="#ffb6cf" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M25 38 q2 9 -1 17" stroke="#ffb6cf" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M32 38 q-2 9 1 17" stroke="#ffb6cf" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M39 36 q3 8 0 16" stroke="#ffb6cf" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>
+</div>
+<div id="jellyBubble">
+  <p>what the <s>helly</s></p>
+  <p class="jellyWord">jelly</p>
+</div>
+<div id="doggo" title="Fluffy">
+  <svg viewBox="0 0 70 100" width="38" height="55">
+    <!-- tail -->
+    <path d="M56 62 q18 -6 12 -26 q-3 -10 -13 -8 q9 6 6 16 q-3 10 -5 18 Z" fill="#e0a855"/>
+    <!-- back legs / body base -->
+    <ellipse cx="35" cy="76" rx="21" ry="20" fill="#f2c579"/>
+    <!-- front legs -->
+    <rect x="22" y="80" width="9" height="18" rx="4.5" fill="#f2c579"/>
+    <rect x="39" y="80" width="9" height="18" rx="4.5" fill="#f2c579"/>
+    <ellipse cx="26.5" cy="98" rx="5.5" ry="3" fill="#fff6e8"/>
+    <ellipse cx="43.5" cy="98" rx="5.5" ry="3" fill="#fff6e8"/>
+    <!-- chest fluff -->
+    <ellipse cx="35" cy="70" rx="10" ry="14" fill="#fbe3ad"/>
+    <!-- ears -->
+    <ellipse cx="18" cy="30" rx="9" ry="13" fill="#dd9d47" transform="rotate(-20 18 30)"/>
+    <ellipse cx="52" cy="30" rx="9" ry="13" fill="#dd9d47" transform="rotate(20 52 30)"/>
+    <!-- head -->
+    <circle cx="35" cy="34" r="19" fill="#f2c579"/>
+    <ellipse cx="35" cy="41" rx="11" ry="9" fill="#fbe3ad"/>
+    <!-- face -->
+    <circle cx="27" cy="30" r="2.6" fill="#4a2e12"/>
+    <circle cx="43" cy="30" r="2.6" fill="#4a2e12"/>
+    <ellipse cx="35" cy="38" rx="3" ry="2.2" fill="#4a2e12"/>
+    <path d="M35 40 q0 4 -4 5" stroke="#4a2e12" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M28 45 q7 6 14 0" stroke="#4a2e12" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="35" cy="51" rx="4" ry="7" fill="#ff8fa8"/>
+  </svg>
+</div>
+<div id="doggoBubble">
+  <p>Fluffy says:</p>
+  <p class="barkWord">barkk barkkkk 🐾</p>
+</div>
 <div class="card">
 <h1>For Sofi 💘</h1>
 <p>A little surprise made with love.</p>
@@ -655,6 +755,7 @@ const carouselDots = document.getElementById("carouselDots");
 let galleryBuilt = false;
 let carouselIndex = 0;
 let carouselTimer = null;
+let photoCount = 0;
 
 function buildGallery(){
     if(galleryBuilt) return;
@@ -676,6 +777,7 @@ function buildGallery(){
 
 function startCarousel(photos){
     if(photos.length === 0) return;
+    photoCount = photos.length;
 
     photos.forEach((src, idx) => {
         const img = document.createElement("img");
@@ -685,7 +787,7 @@ function startCarousel(photos){
 
         const dot = document.createElement("div");
         dot.className = "carouselDot" + (idx === 0 ? " active" : "");
-        dot.onclick = () => goToSlide(idx);
+        dot.onclick = () => { goToSlide(idx); restartCarouselTimer(); };
         carouselDots.appendChild(dot);
     });
 
@@ -693,10 +795,16 @@ function startCarousel(photos){
     reveal(galleryEl, "block");
     if(photos.length > 1){
         reveal(carouselDots, "flex");
-        carouselTimer = setInterval(() => {
-            goToSlide((carouselIndex + 1) % photos.length);
-        }, 4000);
+        restartCarouselTimer();
+        setupSwipe();
     }
+}
+
+function restartCarouselTimer(){
+    if(carouselTimer) clearInterval(carouselTimer);
+    carouselTimer = setInterval(() => {
+        goToSlide((carouselIndex + 1) % photoCount);
+    }, 4000);
 }
 
 function goToSlide(idx){
@@ -709,6 +817,23 @@ function goToSlide(idx){
     dots[carouselIndex].classList.add("active");
 }
 
+function setupSwipe(){
+    let startX = 0;
+    galleryEl.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+    }, {passive:true});
+    galleryEl.addEventListener("touchend", (e) => {
+        const deltaX = e.changedTouches[0].clientX - startX;
+        if(Math.abs(deltaX) < 40) return; // too small to count as a swipe
+        if(deltaX < 0){
+            goToSlide((carouselIndex + 1) % photoCount); // swipe left -> next
+        } else {
+            goToSlide((carouselIndex - 1 + photoCount) % photoCount); // swipe right -> previous
+        }
+        restartCarouselTimer();
+    }, {passive:true});
+}
+
 function heart(){
     let h=document.createElement("div");
     h.className="heart";
@@ -719,5 +844,31 @@ function heart(){
     document.getElementById("hearts").appendChild(h);
     setTimeout(()=>h.remove(),7000);
 }
+
+// ---------------- Jellyfish easter egg ----------------
+const jellyfish = document.getElementById("jellyfish");
+const jellyBubble = document.getElementById("jellyBubble");
+jellyfish.onclick = (e) => {
+    e.stopPropagation();
+    jellyBubble.style.display = jellyBubble.style.display === "block" ? "none" : "block";
+};
+document.addEventListener("click", (e) => {
+    if(jellyBubble.style.display === "block" && !jellyBubble.contains(e.target) && e.target !== jellyfish){
+        jellyBubble.style.display = "none";
+    }
+});
+
+// ---------------- Golden retriever easter egg ----------------
+const doggo = document.getElementById("doggo");
+const doggoBubble = document.getElementById("doggoBubble");
+doggo.onclick = (e) => {
+    e.stopPropagation();
+    doggoBubble.style.display = doggoBubble.style.display === "block" ? "none" : "block";
+};
+document.addEventListener("click", (e) => {
+    if(doggoBubble.style.display === "block" && !doggoBubble.contains(e.target) && e.target !== doggo){
+        doggoBubble.style.display = "none";
+    }
+});
 
 setInterval(heart,250);</script></body></html>
