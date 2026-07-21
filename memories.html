@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Our Memories ❤️</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;min-height:100vh;padding:24px 12px;box-sizing:border-box}
+.card{background:#ffffffcc;padding:26px;border-radius:20px;max-width:480px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1);height:fit-content}
+h1{color:#ff4f8b;margin-bottom:4px;font-size:22px}
+.sub{color:#c9558a;font-size:13px;margin-top:0}
+a.back{display:inline-block;margin-top:10px;color:#ff6f9f;text-decoration:none;font-size:13px}
+a.back:hover{text-decoration:underline}
+
+.monthNav{display:flex;align-items:center;justify-content:space-between;margin-top:18px}
+.monthNav button{background:none;border:none;font-size:20px;color:#ff4f8b;cursor:pointer;padding:4px 10px;border-radius:8px}
+.monthNav button:hover{background:#fff0f5}
+#monthLabel{font-weight:bold;color:#7a2848;font-size:16px}
+
+.weekdays{display:grid;grid-template-columns:repeat(7,1fr);margin-top:14px;font-size:11px;color:#c9558a;font-weight:bold}
+.daysGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
+.dayCell{
+  aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:10px;cursor:pointer;font-size:13px;color:#7a2848;position:relative;
+  background:#fff;border:1px solid #ffe1ec;transition:background .15s,transform .15s
+}
+.dayCell:hover{background:#fff0f5;transform:scale(1.05)}
+.dayCell.empty{visibility:hidden;cursor:default}
+.dayCell.hasMemory{background:#ffe1ec;border-color:#ff9dbe;font-weight:bold}
+.dayCell .dot{width:5px;height:5px;border-radius:50%;background:#ff4f8b;margin-top:2px}
+.dayCell.today{outline:2px solid #ff4f8b}
+
+#panelOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+#panel{background:#fff;border-radius:18px;padding:22px;max-width:380px;width:100%;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+#panelDate{color:#ff4f8b;font-weight:bold;font-size:15px;margin-bottom:10px}
+#memoryText{width:100%;min-height:90px;border-radius:12px;border:2px solid #ffd1e0;padding:10px;font-family:inherit;font-size:14px;box-sizing:border-box;resize:vertical}
+#memoryText:focus{outline:none;border-color:#ff6f9f}
+.panelBtns{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.panelBtns button{padding:10px 18px;border:none;border-radius:24px;cursor:pointer;font-size:13px}
+#saveMemory{background:#ff6f9f;color:#fff}
+#deleteMemory{background:#fff;color:#e0356b;border:1px solid #ffc3d5!important}
+#closePanel{background:#f4f4f4;color:#555}
+#viewMode p{font-size:15px;color:#7a2848;line-height:1.5;white-space:pre-wrap;text-align:left}
+</style></head><body>
+<div class="card">
+<h1>Our Memory Calendar 📅❤️</h1>
+<p class="sub">Tap a date to see what happened, or add a memory of your own</p>
+
+<div class="monthNav">
+  <button id="prevMonth">←</button>
+  <div id="monthLabel"></div>
+  <button id="nextMonth">→</button>
+</div>
+
+<div class="weekdays">
+  <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+</div>
+<div class="daysGrid" id="daysGrid"></div>
+
+<a class="back" href="index.html">← Back to the surprise</a>
+</div>
+
+<div id="panelOverlay">
+  <div id="panel">
+    <div id="panelDate"></div>
+    <div id="viewMode" style="display:none">
+      <p id="memoryDisplay"></p>
+      <div class="panelBtns">
+        <button id="editMemory">Edit</button>
+        <button id="deleteMemory">Delete</button>
+        <button id="closePanel">Close</button>
+      </div>
+    </div>
+    <div id="editMode">
+      <textarea id="memoryText" placeholder="What happened on this day?"></textarea>
+      <div class="panelBtns">
+        <button id="saveMemory">Save ❤️</button>
+        <button id="closePanel2">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// -------- Memory data --------
+// Pre-set memories go here, e.g. "2026-04-11": "The day we met..."
+// These show for every visitor. Anything added through the calendar UI itself
+// is saved only in that visitor's browser (localStorage), same as the rest of
+// this site's device-only features.
+const defaultMemories = {
+    // "2026-04-11": "The day it all started ❤️"
+};
+const STORAGE_KEY = "sofiMemories";
+
+function loadLocalMemories(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+    catch(e){ return {}; }
+}
+function saveLocalMemories(m){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(m)); } catch(e){}
+}
+function getAllMemories(){
+    return Object.assign({}, defaultMemories, loadLocalMemories());
+}
+
+// -------- Calendar state --------
+const today = new Date();
+let viewYear = today.getFullYear();
+let viewMonth = today.getMonth();
+let selectedKey = null;
+
+const monthLabel = document.getElementById("monthLabel");
+const daysGrid = document.getElementById("daysGrid");
+const panelOverlay = document.getElementById("panelOverlay");
+const panelDate = document.getElementById("panelDate");
+const viewModeEl = document.getElementById("viewMode");
+const editModeEl = document.getElementById("editMode");
+const memoryDisplay = document.getElementById("memoryDisplay");
+const memoryText = document.getElementById("memoryText");
+
+const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function dateKey(y,m,d){
+    return y + "-" + String(m+1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+}
+
+function renderCalendar(){
+    monthLabel.textContent = monthNames[viewMonth] + " " + viewYear;
+    daysGrid.innerHTML = "";
+    const memories = getAllMemories();
+
+    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+    const totalDays = new Date(viewYear, viewMonth+1, 0).getDate();
+
+    for(let i=0; i<firstDay; i++){
+        const empty = document.createElement("div");
+        empty.className = "dayCell empty";
+        daysGrid.appendChild(empty);
+    }
+
+    for(let d=1; d<=totalDays; d++){
+        const key = dateKey(viewYear, viewMonth, d);
+        const cell = document.createElement("div");
+        cell.className = "dayCell";
+        if(memories[key]) cell.classList.add("hasMemory");
+        if(key === dateKey(today.getFullYear(), today.getMonth(), today.getDate())) cell.classList.add("today");
+
+        const num = document.createElement("div");
+        num.textContent = d;
+        cell.appendChild(num);
+        if(memories[key]){
+            const dot = document.createElement("div");
+            dot.className = "dot";
+            cell.appendChild(dot);
+        }
+
+        cell.onclick = () => openPanel(key);
+        daysGrid.appendChild(cell);
+    }
+}
+
+document.getElementById("prevMonth").onclick = () => {
+    viewMonth--;
+    if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+    renderCalendar();
+};
+document.getElementById("nextMonth").onclick = () => {
+    viewMonth++;
+    if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+    renderCalendar();
+};
+
+function formatFriendly(key){
+    const [y,m,d] = key.split("-").map(Number);
+    return monthNames[m-1] + " " + d + ", " + y;
+}
+
+function openPanel(key){
+    selectedKey = key;
+    panelDate.textContent = formatFriendly(key);
+    const memories = getAllMemories();
+    if(memories[key]){
+        memoryDisplay.textContent = memories[key];
+        viewModeEl.style.display = "block";
+        editModeEl.style.display = "none";
+    } else {
+        memoryText.value = "";
+        viewModeEl.style.display = "none";
+        editModeEl.style.display = "block";
+    }
+    panelOverlay.style.display = "flex";
+}
+
+function closePanel(){
+    panelOverlay.style.display = "none";
+    selectedKey = null;
+}
+document.getElementById("closePanel").onclick = closePanel;
+document.getElementById("closePanel2").onclick = closePanel;
+panelOverlay.addEventListener("click", (e) => { if(e.target === panelOverlay) closePanel(); });
+
+document.getElementById("editMemory").onclick = () => {
+    const memories = getAllMemories();
+    memoryText.value = memories[selectedKey] || "";
+    viewModeEl.style.display = "none";
+    editModeEl.style.display = "block";
+};
+
+document.getElementById("saveMemory").onclick = () => {
+    const local = loadLocalMemories();
+    local[selectedKey] = memoryText.value.trim();
+    saveLocalMemories(local);
+    renderCalendar();
+    closePanel();
+};
+
+document.getElementById("deleteMemory").onclick = () => {
+    const local = loadLocalMemories();
+    delete local[selectedKey];
+    saveLocalMemories(local);
+    renderCalendar();
+    closePanel();
+};
+
+renderCalendar();
+</script>
+</body></html>
