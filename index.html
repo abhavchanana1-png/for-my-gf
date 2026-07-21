@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>For Sofi ❤️</title>
+<title>For Sofi 💘</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <style>
@@ -55,6 +55,11 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 /* --- music controls --- */
 #musicRow button{min-width:120px}
 #trackLabel{font-size:13px;color:#c9558a;margin-top:6px}
+#seekRow{display:flex;align-items:center;gap:8px;max-width:340px;margin:10px auto 0}
+#seekRow span{font-size:11px;color:#c9558a;min-width:32px}
+#seekBar{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;background:#ffd1e0;outline:none;cursor:pointer}
+#seekBar::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:#ff4f8b;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+#seekBar::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#ff4f8b;cursor:pointer;border:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .musicControls{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
 .musicControls button.small{min-width:auto;padding:10px 14px}
 
@@ -122,23 +127,23 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 #reasonText{font-size:17px;color:#7a2848;margin:8px 0 0;line-height:1.5}
 </style></head><body>
 <div id="lockScreen">
-  <h2>For Sofi ❤️</h2>
+  <h2>For Sofi 💘</h2>
   <p>Enter the PIN to open your surprise</p>
   <input id="pinInput" type="tel" inputmode="numeric" maxlength="6" placeholder="••••">
-  <button id="pinSubmit" style="margin-top:12px">Unlock ❤️</button>
+  <button id="pinSubmit" style="margin-top:12px">Unlock 💘</button>
   <div id="pinError"></div>
 </div>
 <div id="hearts"></div>
 <div id="confetti"></div>
 <div class="card">
-<h1>For Sofi ❤️</h1>
+<h1>For Sofi 💘</h1>
 <p>A little surprise made with love.</p>
-<button id="open">Open ❤️</button>
+<button id="open">Open 💘</button>
 <div id="letter"></div>
-<button id="continue" style="display:none">Continue ❤️</button>
+<button id="continue" style="display:none">Continue 💘</button>
 
 <div id="puzzleContainer">
-  <p id="puzzleMsg">Piece our memory back together ❤️ (tap two pieces to swap them)</p>
+  <p id="puzzleMsg">Piece our memory back together 💘 (tap two pieces to swap them)</p>
   <p id="puzzleProgress"></p>
   <div class="puzzleWrap">
     <div id="hintImg"></div>
@@ -148,7 +153,7 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 </div>
 
 <img id="photo" src="photo.jpeg">
-<p id="quote">These <span id="dayWord">100</span> days are just a small part of our long journey, and you're the only one I want to share it with.<br>Thank you for always choosing me. ❤️</p>
+<p id="quote">These 100 days are just a small part of our long journey, and you're the only one I want to share it with.<br>Thank you for always choosing me. 💘</p>
 <div id="counter"></div>
 <p id="anniversary"></p>
 
@@ -160,6 +165,11 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
     <button id="nextBtn" class="small">⏭</button>
   </div>
   <div id="trackLabel"></div>
+  <div id="seekRow">
+    <span id="currentTime">0:00</span>
+    <input type="range" id="seekBar" min="0" max="100" value="0" step="0.1">
+    <span id="durationTime">0:00</span>
+  </div>
 </div>
 <audio id="song"></audio>
 
@@ -168,7 +178,7 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <div id="carouselDots" style="display:none"></div>
 
 <div id="reasonsSection">
-  <button id="reasonsBtn">Show me a reason ❤️</button>
+  <button id="reasonsBtn">Show me a reason 💘</button>
   <div id="reasonCard">
     <div id="reasonNumber"></div>
     <p id="reasonText"></p>
@@ -179,8 +189,8 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   <a href="memories.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Our Memory Calendar 📅</a>
 </div>
 
-<div id="forever"><button id="foreverBtn">Forever ❤️</button></div>
-<h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi ❤️<br>— Abhav</h2>
+<div id="forever"><button id="foreverBtn">Forever 💘</button></div>
+<h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi 💘<br>— Abhav</h2>
 </div>
 <script>
 // ---------------- PIN lock screen ----------------
@@ -199,7 +209,7 @@ function tryUnlock(){
         try { localStorage.setItem(UNLOCK_KEY, "true"); } catch(e){}
         lockScreen.style.display = "none";
     } else {
-        pinError.textContent = "Not quite — try again ❤️";
+        pinError.textContent = "Not quite — try again 💘";
         lockScreen.classList.remove("shake");
         void lockScreen.offsetWidth;
         lockScreen.classList.add("shake");
@@ -243,7 +253,6 @@ const continueBtn = document.getElementById("continue");
 const letter = document.getElementById("letter");
 const photo = document.getElementById("photo");
 const quote = document.getElementById("quote");
-const dayWord = document.getElementById("dayWord");
 const counter = document.getElementById("counter");
 const anniversaryEl = document.getElementById("anniversary");
 const musicRow = document.getElementById("musicRow");
@@ -252,6 +261,9 @@ const pauseBtn = document.getElementById("pauseBtn");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const trackLabel = document.getElementById("trackLabel");
+const seekBar = document.getElementById("seekBar");
+const currentTimeEl = document.getElementById("currentTime");
+const durationTimeEl = document.getElementById("durationTime");
 const song = document.getElementById("song");
 const galleryEl = document.getElementById("gallery");
 const forever = document.getElementById("forever");
@@ -267,7 +279,7 @@ const puzzleEl = document.getElementById("puzzle");
 const puzzleMsg = document.getElementById("puzzleMsg");
 const puzzleProgress = document.getElementById("puzzleProgress");
 
-const msg=`Hi Sofi ❤️
+const msg=`Hi Sofi 💘
 
 I made this little surprise just for you.
 
@@ -370,7 +382,7 @@ function selectPiece(slot){
 }
 
 function onPuzzleSolved(){
-    puzzleMsg.textContent = "You solved it! ❤️";
+    puzzleMsg.textContent = "You solved it! 💘";
     puzzleProgress.textContent = "9 / 9 — perfect!";
     launchConfetti(120);
     playSuccessChime();
@@ -466,7 +478,7 @@ function nextReason(){
 }
 reasonsBtn.onclick = () => {
     nextReason();
-    reasonsBtn.textContent = "Show me another ❤️";
+    reasonsBtn.textContent = "Show me another 💘";
 };
 
 function launchConfetti(count){
@@ -534,6 +546,9 @@ function loadTrack(idx, autoplay){
     trackIndex = (idx + playlist.length) % playlist.length;
     song.src = playlist[trackIndex].src;
     trackLabel.textContent = playlist[trackIndex].label + " (" + (trackIndex+1) + "/" + playlist.length + ")";
+    seekBar.value = 0;
+    currentTimeEl.textContent = "0:00";
+    durationTimeEl.textContent = "0:00";
     if(autoplay){
         song.play();
         playBtn.style.display = "none";
@@ -568,6 +583,33 @@ song.addEventListener("ended", () => {
     loadTrack(trackIndex + 1, true); // auto-advance, loops back to the first song
 });
 
+// ---------------- Seek bar ----------------
+function formatTime(sec){
+    if(!isFinite(sec)) return "0:00";
+    const m = Math.floor(sec/60);
+    const s = Math.floor(sec%60).toString().padStart(2,"0");
+    return m + ":" + s;
+}
+song.addEventListener("loadedmetadata", () => {
+    seekBar.max = song.duration || 0;
+    durationTimeEl.textContent = formatTime(song.duration);
+});
+song.addEventListener("timeupdate", () => {
+    if(!seekDragging){
+        seekBar.value = song.currentTime;
+        currentTimeEl.textContent = formatTime(song.currentTime);
+    }
+});
+let seekDragging = false;
+seekBar.addEventListener("input", () => {
+    seekDragging = true;
+    currentTimeEl.textContent = formatTime(seekBar.value);
+});
+seekBar.addEventListener("change", () => {
+    song.currentTime = seekBar.value;
+    seekDragging = false;
+});
+
 foreverBtn.onclick = () => {
     reveal(final);
     launchConfetti(90);
@@ -585,9 +627,8 @@ const s = new Date("2026-04-11");
 
 function upd(){
     let d = Math.floor((getSpainNow()-s)/(1000*60*60*24));
-    dayWord.textContent = d;
     counter.innerHTML =
-    "❤️ Together since 11 April 2026 ❤️<br><b>"+d+"</b> beautiful days together";
+    "💘 Together since 11 April 2026 💘<br><b>"+d+"</b> beautiful days together";
 }
 
 upd();
