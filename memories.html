@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Our Memories ❤️</title>
+<title>Our Memories 💘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;min-height:100vh;padding:24px 12px;box-sizing:border-box}
-.card{background:#ffffffcc;padding:26px;border-radius:20px;max-width:480px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1);height:fit-content}
-h1{color:#ff4f8b;margin-bottom:4px;font-size:22px}
+body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;min-height:100vh;padding:24px 12px;box-sizing:border-box}
+.card{font-family:'Quicksand',Arial,sans-serif;background:#ffffffcc;padding:26px;border-radius:20px;max-width:480px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1);height:fit-content}
+h1{color:#ff4f8b;margin-bottom:4px;font-size:26px;font-family:'Pacifico',cursive;font-weight:normal}
 .sub{color:#c9558a;font-size:13px;margin-top:0}
 a.back{display:inline-block;margin-top:10px;color:#ff6f9f;text-decoration:none;font-size:13px}
 a.back:hover{text-decoration:underline}
@@ -18,30 +20,25 @@ a.back:hover{text-decoration:underline}
 .daysGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
 .dayCell{
   aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border-radius:10px;cursor:pointer;font-size:13px;color:#7a2848;position:relative;
-  background:#fff;border:1px solid #ffe1ec;transition:background .15s,transform .15s
+  border-radius:10px;font-size:14px;font-family:'Quicksand',Arial,sans-serif;font-weight:700;color:#7a2848;position:relative;overflow:hidden;
+  background:#fff;border:1px solid #ffe1ec;transition:background .15s,transform .15s;cursor:default
 }
-.dayCell:hover{background:#fff0f5;transform:scale(1.05)}
-.dayCell.empty{visibility:hidden;cursor:default}
-.dayCell.hasMemory{background:#ffe1ec;border-color:#ff9dbe;font-weight:bold}
-.dayCell .dot{width:5px;height:5px;border-radius:50%;background:#ff4f8b;margin-top:2px}
+.dayCell.empty{visibility:hidden}
+.dayCell.hasMemory{background:#ffe1ec;border-color:#ff9dbe;font-weight:bold;cursor:pointer}
+.dayCell.hasMemory:hover{background:#ffd1e0;transform:scale(1.05)}
+.dayCell .dot{font-size:10px;margin-top:1px;line-height:1;white-space:nowrap}
 .dayCell.today{outline:2px solid #ff4f8b}
 
 #panelOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
-#panel{background:#fff;border-radius:18px;padding:22px;max-width:380px;width:100%;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+#panel{font-family:'Quicksand',Arial,sans-serif;background:#fff;border-radius:18px;padding:22px;max-width:380px;width:100%;box-shadow:0 12px 30px rgba(0,0,0,.2)}
 #panelDate{color:#ff4f8b;font-weight:bold;font-size:15px;margin-bottom:10px}
-#memoryText{width:100%;min-height:90px;border-radius:12px;border:2px solid #ffd1e0;padding:10px;font-family:inherit;font-size:14px;box-sizing:border-box;resize:vertical}
-#memoryText:focus{outline:none;border-color:#ff6f9f}
-.panelBtns{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-.panelBtns button{padding:10px 18px;border:none;border-radius:24px;cursor:pointer;font-size:13px}
-#saveMemory{background:#ff6f9f;color:#fff}
-#deleteMemory{background:#fff;color:#e0356b;border:1px solid #ffc3d5!important}
-#closePanel{background:#f4f4f4;color:#555}
-#viewMode p{font-size:15px;color:#7a2848;line-height:1.5;white-space:pre-wrap;text-align:left}
+#memoryDisplay{font-size:15px;color:#7a2848;line-height:1.5;white-space:pre-wrap;text-align:left;margin:0}
+.panelBtns{display:flex;justify-content:center;margin-top:16px}
+.panelBtns button{padding:10px 22px;border:none;border-radius:24px;cursor:pointer;font-size:13px;background:#f4f4f4;color:#555}
 </style></head><body>
 <div class="card">
-<h1>Our Memory Calendar 📅❤️</h1>
-<p class="sub">Tap a date to see what happened, or add a memory of your own</p>
+<h1>Our Memory Calendar 📅💘</h1>
+<p class="sub">Tap a highlighted date to see what happened</p>
 
 <div class="monthNav">
   <button id="prevMonth">←</button>
@@ -60,60 +57,39 @@ a.back:hover{text-decoration:underline}
 <div id="panelOverlay">
   <div id="panel">
     <div id="panelDate"></div>
-    <div id="viewMode" style="display:none">
-      <p id="memoryDisplay"></p>
-      <div class="panelBtns">
-        <button id="editMemory">Edit</button>
-        <button id="deleteMemory">Delete</button>
-        <button id="closePanel">Close</button>
-      </div>
-    </div>
-    <div id="editMode">
-      <textarea id="memoryText" placeholder="What happened on this day?"></textarea>
-      <div class="panelBtns">
-        <button id="saveMemory">Save ❤️</button>
-        <button id="closePanel2">Cancel</button>
-      </div>
+    <p id="memoryDisplay"></p>
+    <div class="panelBtns">
+      <button id="closePanel">Close</button>
     </div>
   </div>
 </div>
 
 <script>
 // -------- Memory data --------
-// Pre-set memories go here, e.g. "2026-04-11": "The day we met..."
-// These show for every visitor. Anything added through the calendar UI itself
-// is saved only in that visitor's browser (localStorage), same as the rest of
-// this site's device-only features.
-const defaultMemories = {
-    // "2026-04-11": "The day it all started ❤️"
+// Add memories here. Each has an emoji (shown right on the calendar tile)
+// and a memory text (shown when tapped).
+const memories = {
+    "2026-03-13": { emoji: "💬✨", text: "My first texts to you" },
+    "2026-03-17": { emoji: "💌😳", text: "First time asking you out" },
+    "2026-03-30": { emoji: "📍🥰", text: "First day in Canvia" },
+    "2026-04-02": { emoji: "💋", text: "First kiss" },
+    "2026-04-04": { emoji: "📸", text: "First insta story" },
+    "2026-04-05": { emoji: "🥰", text: "First date" },
+    "2026-04-11": { emoji: "💑💘", text: "Official" },
+    "2026-04-18": { emoji: "🥹💘", text: "First time saying I love you" },
+    "2026-04-23": { emoji: "✈️😢", text: "Me leaving for India for a while" }
 };
-const STORAGE_KEY = "sofiMemories";
-
-function loadLocalMemories(){
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
-    catch(e){ return {}; }
-}
-function saveLocalMemories(m){
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(m)); } catch(e){}
-}
-function getAllMemories(){
-    return Object.assign({}, defaultMemories, loadLocalMemories());
-}
 
 // -------- Calendar state --------
 const today = new Date();
-let viewYear = today.getFullYear();
-let viewMonth = today.getMonth();
-let selectedKey = null;
+let viewYear = 2026;
+let viewMonth = 2; // March (0-indexed)
 
 const monthLabel = document.getElementById("monthLabel");
 const daysGrid = document.getElementById("daysGrid");
 const panelOverlay = document.getElementById("panelOverlay");
 const panelDate = document.getElementById("panelDate");
-const viewModeEl = document.getElementById("viewMode");
-const editModeEl = document.getElementById("editMode");
 const memoryDisplay = document.getElementById("memoryDisplay");
-const memoryText = document.getElementById("memoryText");
 
 const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -124,7 +100,6 @@ function dateKey(y,m,d){
 function renderCalendar(){
     monthLabel.textContent = monthNames[viewMonth] + " " + viewYear;
     daysGrid.innerHTML = "";
-    const memories = getAllMemories();
 
     const firstDay = new Date(viewYear, viewMonth, 1).getDay();
     const totalDays = new Date(viewYear, viewMonth+1, 0).getDate();
@@ -146,12 +121,13 @@ function renderCalendar(){
         num.textContent = d;
         cell.appendChild(num);
         if(memories[key]){
-            const dot = document.createElement("div");
-            dot.className = "dot";
-            cell.appendChild(dot);
+            const emoji = document.createElement("div");
+            emoji.className = "dot";
+            emoji.textContent = memories[key].emoji;
+            cell.appendChild(emoji);
+            cell.onclick = () => openPanel(key);
         }
 
-        cell.onclick = () => openPanel(key);
         daysGrid.appendChild(cell);
     }
 }
@@ -173,51 +149,15 @@ function formatFriendly(key){
 }
 
 function openPanel(key){
-    selectedKey = key;
-    panelDate.textContent = formatFriendly(key);
-    const memories = getAllMemories();
-    if(memories[key]){
-        memoryDisplay.textContent = memories[key];
-        viewModeEl.style.display = "block";
-        editModeEl.style.display = "none";
-    } else {
-        memoryText.value = "";
-        viewModeEl.style.display = "none";
-        editModeEl.style.display = "block";
-    }
+    panelDate.textContent = memories[key].emoji + "  " + formatFriendly(key);
+    memoryDisplay.textContent = memories[key].text;
     panelOverlay.style.display = "flex";
 }
-
 function closePanel(){
     panelOverlay.style.display = "none";
-    selectedKey = null;
 }
 document.getElementById("closePanel").onclick = closePanel;
-document.getElementById("closePanel2").onclick = closePanel;
 panelOverlay.addEventListener("click", (e) => { if(e.target === panelOverlay) closePanel(); });
-
-document.getElementById("editMemory").onclick = () => {
-    const memories = getAllMemories();
-    memoryText.value = memories[selectedKey] || "";
-    viewModeEl.style.display = "none";
-    editModeEl.style.display = "block";
-};
-
-document.getElementById("saveMemory").onclick = () => {
-    const local = loadLocalMemories();
-    local[selectedKey] = memoryText.value.trim();
-    saveLocalMemories(local);
-    renderCalendar();
-    closePanel();
-};
-
-document.getElementById("deleteMemory").onclick = () => {
-    const local = loadLocalMemories();
-    delete local[selectedKey];
-    saveLocalMemories(local);
-    renderCalendar();
-    closePanel();
-};
 
 renderCalendar();
 </script>
