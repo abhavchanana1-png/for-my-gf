@@ -52,6 +52,21 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 }
 #doggoBubble p{margin:0;color:#7a2848;font-weight:bold;font-size:16px}
 
+/* --- little explorer easter egg --- */
+#explorer{
+  position:fixed;bottom:18px;left:18px;cursor:pointer;z-index:40;
+  animation:explorerWiggle 2.6s ease-in-out infinite;user-select:none;
+  filter:drop-shadow(0 3px 6px rgba(255,111,165,.4));
+}
+@keyframes explorerWiggle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+#explorerBubble{
+  display:none;position:fixed;bottom:78px;left:14px;z-index:41;
+  background:#fff;border:1px solid #bfe8d4;border-radius:16px;padding:12px 18px;
+  box-shadow:0 6px 18px rgba(90,175,140,.25);text-align:center;font-family:'Quicksand',Arial,sans-serif;
+  animation:jellyPop .3s ease both;
+}
+#explorerBubble p{margin:0;color:#2e6b52;font-weight:bold;font-size:16px}
+
 /* --- fade-in reveal --- */
 .fade-in{animation:fadeIn .8s ease both}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -188,7 +203,8 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   button{padding:10px 18px;font-size:14px}
   #jellyfish svg{width:22px;height:22px}
   #doggo svg{width:30px;height:43px}
-  #jellyBubble,#doggoBubble{padding:10px 14px}
+  #explorer svg{width:32px;height:44px}
+  #jellyBubble,#doggoBubble,#explorerBubble{padding:10px 14px}
   #pinInput{width:130px;font-size:18px}
 }
 </style></head><body>
@@ -249,6 +265,35 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <div id="doggoBubble">
   <p>Fluffy says:</p>
   <p class="barkWord">wof wofff 🐾</p>
+</div>
+<div id="explorer" title="Dora">
+  <svg viewBox="0 0 70 100" width="40" height="55">
+    <!-- backpack -->
+    <rect x="10" y="52" width="16" height="24" rx="6" fill="#4a90a4"/>
+    <rect x="13" y="56" width="10" height="7" rx="2" fill="#eaf7f0"/>
+    <!-- body -->
+    <ellipse cx="35" cy="70" rx="17" ry="19" fill="#ff6fa5"/>
+    <!-- legs -->
+    <rect x="26" y="82" width="8" height="16" rx="4" fill="#7a8c4a"/>
+    <rect x="38" y="82" width="8" height="16" rx="4" fill="#7a8c4a"/>
+    <ellipse cx="30" cy="98" rx="5.5" ry="3" fill="#ffffff"/>
+    <ellipse cx="42" cy="98" rx="5.5" ry="3" fill="#ffffff"/>
+    <!-- map in hand -->
+    <rect x="46" y="60" width="14" height="11" rx="1.5" fill="#fff3d6" stroke="#d9a441" stroke-width="1" transform="rotate(12 53 65)"/>
+    <!-- head -->
+    <circle cx="35" cy="38" r="18" fill="#a9713f"/>
+    <!-- hair (bob) -->
+    <path d="M17 34 q-1 -22 18 -22 q19 0 18 22 q0 8 -2 13 l-4 -1 q1 -8 -1 -13 q-2 4 -9 4 q-9 0 -13 -6 q-2 5 -2 12 l-4 1 q-2 -5 -1 -10 Z" fill="#2b1a10"/>
+    <!-- face -->
+    <circle cx="28" cy="39" r="2.4" fill="#2b1a10"/>
+    <circle cx="42" cy="39" r="2.4" fill="#2b1a10"/>
+    <path d="M29 47 q6 5 12 0" stroke="#7a4322" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <circle cx="24" cy="44" r="3" fill="#e08a5e" opacity=".5"/>
+    <circle cx="46" cy="44" r="3" fill="#e08a5e" opacity=".5"/>
+  </svg>
+</div>
+<div id="explorerBubble">
+  <p>¡Hola! Yo soy Nina 🗺️</p>
 </div>
 <div class="card">
 <h1>For Sofi 💘</h1>
@@ -899,6 +944,19 @@ doggo.onclick = (e) => {
 document.addEventListener("click", (e) => {
     if(doggoBubble.style.display === "block" && !doggoBubble.contains(e.target) && e.target !== doggo){
         doggoBubble.style.display = "none";
+    }
+});
+
+// ---------------- Little explorer easter egg ----------------
+const explorer = document.getElementById("explorer");
+const explorerBubble = document.getElementById("explorerBubble");
+explorer.onclick = (e) => {
+    e.stopPropagation();
+    explorerBubble.style.display = explorerBubble.style.display === "block" ? "none" : "block";
+};
+document.addEventListener("click", (e) => {
+    if(explorerBubble.style.display === "block" && !explorerBubble.contains(e.target) && e.target !== explorer){
+        explorerBubble.style.display = "none";
     }
 });
 
