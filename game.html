@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Catch the Hearts 💘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(#ffeef5,#fff);min-height:100vh;font-family:'Quicksand',Arial,sans-serif;
+  display:flex;justify-content:center;align-items:center;padding:20px;box-sizing:border-box}
+.wrap{max-width:460px;width:100%;text-align:center}
+h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;margin:0 0 4px}
+.sub{color:#c9558a;font-size:13.5px;margin:0 0 14px}
+.back{display:inline-block;margin-bottom:10px;color:#c9558a;text-decoration:none;font-size:13px}
+.back:hover{text-decoration:underline}
+
+.hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+  font-weight:600;color:#7a2848;font-size:15px;padding:0 4px}
+
+#gameWrap{position:relative;width:100%;aspect-ratio:3/4;border-radius:20px;overflow:hidden;
+  background:linear-gradient(#fff5f8,#ffe4ef);border:1px solid #ffd1e0;
+  box-shadow:0 10px 26px rgba(255,79,139,.15);touch-action:none;}
+
+#basket{position:absolute;bottom:14px;width:64px;height:44px;font-size:40px;
+  display:flex;align-items:center;justify-content:center;transform:translateX(-50%);
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.15));pointer-events:none;}
+
+.fallingHeart{position:absolute;font-size:26px;pointer-events:none;user-select:none;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.12));}
+.fallingHeart .emoji{display:block;line-height:1}
+.fallingHeart .pts{position:absolute;bottom:-4px;right:-8px;font-size:10px;font-weight:700;
+  color:#ff4f8b;background:#fff;border-radius:50%;width:17px;height:17px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+
+.fallingHeart.sparkles{filter:drop-shadow(0 0 5px #fff2a8) drop-shadow(0 2px 4px rgba(0,0,0,.12));}
+.fallingHeart.sparklyheart{font-size:30px;filter:drop-shadow(0 0 7px #ffd8a8) drop-shadow(0 2px 4px rgba(0,0,0,.12));
+  animation:sparklePulse .5s ease-in-out infinite alternate;}
+@keyframes sparklePulse{from{transform:scale(1)}to{transform:scale(1.15)}}
+
+.popScore{position:absolute;font-size:15px;font-weight:700;color:#ff4f8b;pointer-events:none;
+  animation:popUp .6s ease forwards;}
+@keyframes popUp{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-30px)}}
+
+#overlay{position:absolute;inset:0;background:#ffffffee;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box;z-index:5}
+#overlay h2{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;margin:0 0 8px;font-size:26px}
+#overlay p{color:#7a2848;font-size:14.5px;line-height:1.6;margin:0 0 18px;max-width:320px}
+#overlay button{padding:12px 26px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;
+  cursor:pointer;font-family:'Quicksand',Arial,sans-serif;font-weight:600;font-size:15px}
+#overlay button:hover{transform:translateY(-2px)}
+
+.legend{display:flex;justify-content:center;gap:18px;margin-top:12px;color:#c9558a;font-size:13px}
+.legend span{display:flex;align-items:center;gap:5px}
+</style></head><body>
+<div class="wrap">
+  <a class="back" href="index.html">&#8592; Back</a>
+  <h1>Catch the Hearts</h1>
+  <p class="sub">Drag / move to catch as many as you can — it speeds up as you go!</p>
+
+  <div class="hud">
+    <div>Score: <span id="score">0</span></div>
+    <div>Time: <span id="time">30</span>s</div>
+  </div>
+
+  <div id="gameWrap">
+    <div id="basket">🧺</div>
+    <div id="overlay">
+      <h2>Ready?</h2>
+      <p>You've got 30 seconds. 💘 = 1 point, ✨ = 2 points, 💖 = 3 points — but they all fall faster the longer you last!</p>
+      <button id="startBtn">Start 💘</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span>💘 = 1pt</span>
+    <span>✨ = 2pt</span>
+    <span>💖 = 3pt</span>
+  </div>
+</div>
+
+<script>
+const gameWrap = document.getElementById("gameWrap");
+const basket = document.getElementById("basket");
+const overlay = document.getElementById("overlay");
+const startBtn = document.getElementById("startBtn");
+const scoreEl = document.getElementById("score");
+const timeEl = document.getElementById("time");
+
+const GAME_LENGTH = 30; // seconds
+const ITEM_TYPES = [
+    { key: "heart",       emoji: "💘", points: 1, className: "",             weight: 0.55 },
+    { key: "sparkles",    emoji: "✨", points: 2, className: "sparkles",     weight: 0.30 },
+    { key: "sparklyheart",emoji: "💖", points: 3, className: "sparklyheart", weight: 0.15 }
+];
+function pickItemType(){
+    const r = Math.random();
+    let cumulative = 0;
+    for(const t of ITEM_TYPES){
+        cumulative += t.weight;
+        if(r <= cumulative) return t;
+    }
+    return ITEM_TYPES[0];
+}
+let score = 0;
+let timeLeft = GAME_LENGTH;
+let running = false;
+let basketX = 50; // percent
+let hearts = [];
+let spawnTimer = null;
+let tickTimer = null;
+let rafId = null;
+let elapsed = 0;
+
+function setBasketX(percent){
+    basketX = Math.max(6, Math.min(94, percent));
+    basket.style.left = basketX + "%";
+}
+setBasketX(50);
+
+function wrapRect(){ return gameWrap.getBoundingClientRect(); }
+
+function pointerToPercent(clientX){
+    const r = wrapRect();
+    return ((clientX - r.left) / r.width) * 100;
+}
+
+gameWrap.addEventListener("mousemove", (e) => {
+    if(!running) return;
+    setBasketX(pointerToPercent(e.clientX));
+});
+gameWrap.addEventListener("touchmove", (e) => {
+    if(!running) return;
+    const t = e.touches[0];
+    if(t) setBasketX(pointerToPercent(t.clientX));
+    e.preventDefault();
+}, {passive:false});
+
+document.addEventListener("keydown", (e) => {
+    if(!running) return;
+    if(e.key === "ArrowLeft") setBasketX(basketX - 6);
+    if(e.key === "ArrowRight") setBasketX(basketX + 6);
+});
+
+function difficultyFactor(){
+    // ramps from 0 (start) to 1 (end of GAME_LENGTH)
+    return Math.min(1, elapsed / GAME_LENGTH);
+}
+
+function spawnHeart(){
+    if(!running) return;
+    const df = difficultyFactor();
+    const type = pickItemType();
+    const el = document.createElement("div");
+    el.className = "fallingHeart" + (type.className ? " " + type.className : "");
+    el.innerHTML = '<span class="emoji">' + type.emoji + '</span><span class="pts">' + type.points + '</span>';
+    const xPercent = 6 + Math.random() * 88;
+    el.style.left = xPercent + "%";
+    el.style.top = "-30px";
+    gameWrap.appendChild(el);
+
+    const baseSpeed = 60;   // px/sec at start
+    const maxSpeed = 220;   // px/sec at hardest
+    const speed = baseSpeed + (maxSpeed - baseSpeed) * df;
+
+    hearts.push({ el, xPercent, y: -30, speed, caught: false, points: type.points });
+
+    // schedule next spawn — gets faster (more frequent) as difficulty rises
+    const baseGap = 1000; // ms at start
+    const minGap = 380;   // ms at hardest
+    const gap = baseGap - (baseGap - minGap) * df;
+    spawnTimer = setTimeout(spawnHeart, gap + Math.random()*200);
+}
+
+function popScoreAt(xPercent, yPx, text){
+    const p = document.createElement("div");
+    p.className = "popScore";
+    p.textContent = text;
+    p.style.left = xPercent + "%";
+    p.style.top = yPx + "px";
+    gameWrap.appendChild(p);
+    setTimeout(() => p.remove(), 600);
+}
+
+function updateScore(delta, xPercent, yPx){
+    score += delta;
+    scoreEl.textContent = score;
+    popScoreAt(xPercent, yPx, "+" + delta);
+}
+
+let lastFrame = null;
+function frame(ts){
+    if(!running) return;
+    if(lastFrame === null) lastFrame = ts;
+    const dt = (ts - lastFrame) / 1000;
+    lastFrame = ts;
+
+    const wrapH = gameWrap.clientHeight;
+    const basketTop = wrapH - 14 - 30; // basket sits near bottom; catch zone near its top
+    const basketHalfWidthPercent = 9;
+
+    hearts.forEach(h => {
+        if(h.caught) return;
+        h.y += h.speed * dt;
+        h.el.style.top = h.y + "px";
+
+        if(h.y >= basketTop && h.y <= basketTop + 40){
+            const withinX = Math.abs(h.xPercent - basketX) <= basketHalfWidthPercent;
+            if(withinX){
+                h.caught = true;
+                updateScore(h.points, h.xPercent, h.y);
+                h.el.remove();
+            }
+        }
+        if(h.y > wrapH + 30 && !h.caught){
+            h.caught = true; // treat as gone (missed)
+            h.el.remove();
+        }
+    });
+    hearts = hearts.filter(h => !h.caught);
+
+    rafId = requestAnimationFrame(frame);
+}
+
+function tick(){
+    elapsed += 1;
+    timeLeft -= 1;
+    timeEl.textContent = Math.max(0, timeLeft);
+    if(timeLeft <= 0){
+        endGame();
+    }
+}
+
+function startGame(){
+    score = 0;
+    timeLeft = GAME_LENGTH;
+    elapsed = 0;
+    scoreEl.textContent = "0";
+    timeEl.textContent = GAME_LENGTH;
+    hearts.forEach(h => h.el.remove());
+    hearts = [];
+    running = true;
+    overlay.style.display = "none";
+    lastFrame = null;
+    spawnHeart();
+    tickTimer = setInterval(tick, 1000);
+    rafId = requestAnimationFrame(frame);
+}
+
+function endGame(){
+    running = false;
+    clearTimeout(spawnTimer);
+    clearInterval(tickTimer);
+    cancelAnimationFrame(rafId);
+    hearts.forEach(h => h.el.remove());
+    hearts = [];
+
+    overlay.querySelector("h2").textContent = "Time's up! 💘";
+    overlay.querySelector("p").innerHTML = "You caught <b>" + score + "</b> point" + (score === 1 ? "" : "s") + " worth of hearts!";
+    startBtn.textContent = "Play again 💘";
+    overlay.style.display = "flex";
+}
+
+startBtn.onclick = startGame;
+</script>
+</body></html>
