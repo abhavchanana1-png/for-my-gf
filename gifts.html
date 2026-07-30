@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Our Gifts 💘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(#ffeef5,#fff);min-height:100vh;font-family:'Quicksand',Arial,sans-serif;padding:24px 0;box-sizing:border-box}
+.wrap{max-width:640px;margin:0 auto;width:92%}
+h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;text-align:center;margin-bottom:6px}
+.sub{text-align:center;color:#c9558a;margin-top:0;margin-bottom:26px;font-size:14px}
+.back{display:inline-block;margin-bottom:18px;color:#c9558a;text-decoration:none;font-size:14px}
+.back:hover{text-decoration:underline}
+
+.giftCard{
+  background:#ffffffcc;border:1px solid #ffe1ec;border-radius:18px;
+  padding:20px;margin-bottom:18px;box-shadow:0 6px 20px rgba(255,79,139,.08);
+  animation:cardIn .6s ease both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.giftLabel{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#c9558a;font-weight:600;margin-bottom:8px}
+.giftTitle{font-size:18px;color:#7a2848;font-weight:600;margin:0 0 10px}
+
+video{width:100%;border-radius:14px;display:block;background:#000}
+
+.letterImg{width:100%;border-radius:14px;display:block}
+
+.giftLinkBtn{
+  display:inline-block;padding:12px 22px;border-radius:30px;background:#ff6f9f;color:#fff;
+  text-decoration:none;font-weight:600;margin-top:4px;transition:transform .15s ease
+}
+.giftLinkBtn:hover{transform:translateY(-2px)}
+</style></head><body>
+<div class="wrap">
+  <a class="back" href="index.html">&#8592; Back</a>
+  <h1>Our Gifts 💘</h1>
+  <p class="sub">A little archive of everything I've given you so far</p>
+
+  <div class="giftCard">
+    <div class="giftLabel">Video</div>
+    <div class="giftTitle">A little video for you</div>
+    <!-- Replace gift-video.mp4 with your actual video file, placed next to this page -->
+    <video controls src="gift-video.mp4" poster="photo.jpeg"></video>
+  </div>
+
+  <div class="giftCard">
+    <div class="giftLabel">Letter 01</div>
+    <div class="giftTitle">The first letter</div>
+    <!-- Replace letter1a.jpeg and letter1b.jpeg with your two photos of the first letter, placed next to this page -->
+    <img class="letterImg" src="letter1a.jpeg" alt="First letter, page 1" style="margin-bottom:10px">
+    <img class="letterImg" src="letter1b.jpeg" alt="First letter, page 2">
+  </div>
+
+  <div class="giftCard">
+    <div class="giftLabel">Letter 02</div>
+    <div class="giftTitle">The second letter</div>
+    <!-- Replace letter2.jpeg with your actual photo of the second letter, placed next to this page -->
+    <img class="letterImg" src="letter2.jpeg" alt="Second letter">
+  </div>
+
+  <div class="giftCard">
+    <div class="giftLabel">Digital Bouquet</div>
+    <div class="giftTitle">Flower bouquet 01</div>
+    <a class="giftLinkBtn" href="https://digibouquet.vercel.app/bouquet/92e7e2a7-2170-4b81-803d-d4628de472d6" target="_blank" rel="noopener">Open bouquet 🌷</a>
+  </div>
+
+  <div class="giftCard">
+    <div class="giftLabel">Digital Bouquet</div>
+    <div class="giftTitle">Flower bouquet 02</div>
+    <a class="giftLinkBtn" href="https://digibouquet.vercel.app/bouquet/a612dd88-d8ef-493d-8ed5-35f02ce44aaf" target="_blank" rel="noopener">Open bouquet 🌷</a>
+  </div>
+</div>
+</body></html>
