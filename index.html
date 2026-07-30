@@ -164,6 +164,26 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 .carouselDot{width:7px;height:7px;border-radius:50%;background:#ffd1e0;cursor:pointer;transition:background .2s,transform .2s}
 .carouselDot.active{background:#ff4f8b;transform:scale(1.25)}
 
+/* --- Girlfriend's Day notification banner --- */
+#gfDayBanner{
+  position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:110;
+  display:none;align-items:center;gap:16px;
+  background:#fff;border:1px solid #ffd1e0;border-radius:20px;
+  padding:18px 22px;box-shadow:0 10px 30px rgba(255,79,139,.28);
+  max-width:440px;width:calc(100% - 28px);box-sizing:border-box;
+  font-family:'Quicksand',Arial,sans-serif;
+  animation:gfDaySlide .4s ease both;
+}
+@keyframes gfDaySlide{from{opacity:0;transform:translateX(-50%) translateY(-16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+#gfDayBanner .gfDayIcon{font-size:34px;flex-shrink:0}
+#gfDayBanner .gfDayText{flex:1;text-align:left}
+#gfDayBanner .gfDayText b{display:block;color:#ff4f8b;font-size:18px}
+#gfDayBanner .gfDayText span{display:block;color:#7a2848;font-size:14.5px;line-height:1.5;margin-top:4px}
+#gfDayBanner .gfDayClose{
+  background:none;border:none;color:#c9558a;font-size:24px;line-height:1;
+  cursor:pointer;padding:2px 6px;flex-shrink:0;
+}
+
 /* --- lock screen --- */
 #lockScreen{position:fixed;inset:0;background:linear-gradient(#ffeef5,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:20px;text-align:center}
 #lockScreen h2{color:#ff4f8b;margin-bottom:6px}
@@ -208,6 +228,15 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   #pinInput{width:130px;font-size:18px}
 }
 </style></head><body>
+<div id="gfDayBanner">
+  <div class="gfDayIcon">💘</div>
+  <div class="gfDayText">
+    <b>Happy Girlfriend's Day!</b>
+    <span>Today's all about celebrating you, Sofi.</span>
+    <a id="gfDayGiftsLink" href="gifts.html" style="display:inline-block;margin-top:8px;color:#ff4f8b;font-weight:700;font-size:13.5px;text-decoration:underline">Click here for a surprise 💘</a>
+  </div>
+  <button class="gfDayClose" id="gfDayClose" aria-label="Dismiss">&times;</button>
+</div>
 <div id="lockScreen">
   <h2>For Sofi 💘</h2>
   <p>Enter the PIN to open your surprise</p>
@@ -353,10 +382,32 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   <a href="memories.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Our Memory Calendar 📅</a>
 </div>
 
+<div id="giftsLink" style="display:none;margin-top:18px">
+  <a id="giftsBtn" href="gifts.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">A Surprise For You 💘</a>
+  <p id="giftsLockedNote" style="display:none;color:#c9558a;font-size:12.5px;margin:6px 0 0">Unlocks on Girlfriend's Day 💘</p>
+</div>
+
 <div id="forever"><button id="foreverBtn">Forever 💘</button></div>
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi 💘<br>— Abhav</h2>
 </div>
 <script>
+// ---------------- Girlfriend's Day banner ----------------
+// Shows automatically on 1 August (Spain time). Set FORCE_GF_DAY_PREVIEW to true
+// to preview it on any date — just remember to set it back to false before sharing.
+const FORCE_GF_DAY_PREVIEW = false;
+function isGirlfriendsDay(){
+    const now = getSpainNow();
+    return now.getMonth() === 7 && now.getDate() === 1; // August is month index 7
+}
+const gfDayBanner = document.getElementById("gfDayBanner");
+const gfDayClose = document.getElementById("gfDayClose");
+if(FORCE_GF_DAY_PREVIEW || isGirlfriendsDay()){
+    gfDayBanner.style.display = "flex";
+}
+gfDayClose.onclick = () => {
+    gfDayBanner.style.display = "none";
+};
+
 // ---------------- PIN lock screen ----------------
 // Change SITE_PIN to whatever you want her to enter. Heads up: since this is a
 // plain static site, this is a fun soft gate (keeps casual visitors out) —
@@ -565,7 +616,33 @@ function showRevealedContent(){
     buildGallery();
     reveal(reasonsSection);
     reveal(document.getElementById("calendarLink"));
+    reveal(document.getElementById("giftsLink"));
+    setupGiftsLock();
     reveal(forever);
+}
+
+// ---------------- Gifts button lock (unlocks on Girlfriend's Day) ----------------
+function setupGiftsLock(){
+    const giftsBtn = document.getElementById("giftsBtn");
+    const giftsLockedNote = document.getElementById("giftsLockedNote");
+    const now = getSpainNow();
+    const unlockDate = new Date(now.getFullYear(), 7, 1); // 1 August this year, Spain time
+    const unlocked = FORCE_GF_DAY_PREVIEW || now >= unlockDate;
+
+    if(unlocked){
+        giftsBtn.textContent = "A Surprise For You 💘";
+        giftsBtn.style.opacity = "1";
+        giftsBtn.style.cursor = "pointer";
+        giftsBtn.onclick = null; // let the link work normally
+    } else {
+        giftsBtn.textContent = "🔒 A Surprise For You";
+        giftsBtn.style.opacity = ".6";
+        giftsBtn.style.cursor = "not-allowed";
+        giftsLockedNote.style.display = "block";
+        giftsBtn.onclick = (e) => {
+            e.preventDefault();
+        };
+    }
 }
 
 // ---------------- 52 reasons why I love you ----------------
