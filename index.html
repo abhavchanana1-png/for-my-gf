@@ -387,6 +387,11 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   <p id="giftsLockedNote" style="display:none;color:#c9558a;font-size:12.5px;margin:6px 0 0">Unlocks on Girlfriend's Day 💘</p>
 </div>
 
+<div id="gameLink" style="display:none;margin-top:18px">
+  <a id="gameBtn" href="game.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Catch the Hearts 🎮</a>
+  <p id="gameLockedNote" style="display:none;color:#c9558a;font-size:12.5px;margin:6px 0 0">Unlocks on Girlfriend's Day 💘</p>
+</div>
+
 <div id="forever"><button id="foreverBtn">Forever 💘</button></div>
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi 💘<br>— Abhav</h2>
 </div>
@@ -617,29 +622,36 @@ function showRevealedContent(){
     reveal(reasonsSection);
     reveal(document.getElementById("calendarLink"));
     reveal(document.getElementById("giftsLink"));
-    setupGiftsLock();
+    reveal(document.getElementById("gameLink"));
+    setupGirlfriendsDayLocks();
     reveal(forever);
 }
 
-// ---------------- Gifts button lock (unlocks on Girlfriend's Day) ----------------
-function setupGiftsLock(){
-    const giftsBtn = document.getElementById("giftsBtn");
-    const giftsLockedNote = document.getElementById("giftsLockedNote");
+// ---------------- Buttons locked until Girlfriend's Day ----------------
+function setupGirlfriendsDayLocks(){
     const now = getSpainNow();
     const unlockDate = new Date(now.getFullYear(), 7, 1); // 1 August this year, Spain time
     const unlocked = FORCE_GF_DAY_PREVIEW || now >= unlockDate;
 
+    setupLockedButton("giftsBtn", "giftsLockedNote", "A Surprise For You 💘", "🔒 A Surprise For You", unlocked);
+    setupLockedButton("gameBtn", "gameLockedNote", "Catch the Hearts 🎮", "🔒 Catch the Hearts", unlocked);
+}
+
+function setupLockedButton(btnId, noteId, unlockedText, lockedText, unlocked){
+    const btn = document.getElementById(btnId);
+    const note = document.getElementById(noteId);
+
     if(unlocked){
-        giftsBtn.textContent = "A Surprise For You 💘";
-        giftsBtn.style.opacity = "1";
-        giftsBtn.style.cursor = "pointer";
-        giftsBtn.onclick = null; // let the link work normally
+        btn.textContent = unlockedText;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+        btn.onclick = null; // let the link work normally
     } else {
-        giftsBtn.textContent = "🔒 A Surprise For You";
-        giftsBtn.style.opacity = ".6";
-        giftsBtn.style.cursor = "not-allowed";
-        giftsLockedNote.style.display = "block";
-        giftsBtn.onclick = (e) => {
+        btn.textContent = lockedText;
+        btn.style.opacity = ".6";
+        btn.style.cursor = "not-allowed";
+        note.style.display = "block";
+        btn.onclick = (e) => {
             e.preventDefault();
         };
     }
