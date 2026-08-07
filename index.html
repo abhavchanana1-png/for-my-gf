@@ -361,6 +361,8 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   </div>
 </div>
 <audio id="song"></audio>
+<!-- Drop a bark.mp3 next to this file to use a real bark sound; otherwise a synthesized woof plays automatically -->
+<audio id="barkSound" src="bark.mp3" preload="none"></audio>
 
 <p id="galleryTitle" style="display:none">Our Photos 📷</p>
 <div class="carouselWrap">
@@ -779,6 +781,10 @@ function beep(freq, duration, type, vol, startDelay){
     osc.stop(t0 + duration + 0.02);
 }
 function playSnap(){ beep(520, 0.06, "triangle", 0.12, 0); }
+function playSynthBark(){
+    beep(190, 0.09, "square", 0.18, 0);
+    beep(150, 0.11, "square", 0.16, 0.09);
+}
 function playSuccessChime(){
     [523.25,659.25,783.99,1046.5].forEach((f,idx)=> beep(f, 0.18, "sine", 0.14, idx*0.12));
 }
@@ -1026,8 +1032,15 @@ document.addEventListener("click", (e) => {
 // ---------------- Golden retriever easter egg ----------------
 const doggo = document.getElementById("doggo");
 const doggoBubble = document.getElementById("doggoBubble");
+const barkSound = document.getElementById("barkSound");
+function playBark(){
+    barkSound.currentTime = 0;
+    const p = barkSound.play();
+    if(p !== undefined){ p.catch(() => playSynthBark()); }
+}
 doggo.onclick = (e) => {
     e.stopPropagation();
+    playBark();
     doggoBubble.style.display = doggoBubble.style.display === "block" ? "none" : "block";
 };
 document.addEventListener("click", (e) => {
