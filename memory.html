@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Memory Game 💘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
+.card-wrap{font-family:'Quicksand',Arial,sans-serif;background:#ffffffcc;padding:26px;border-radius:20px;max-width:480px;width:92%;box-sizing:border-box;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;margin:0 0 4px}
+p{color:#7a2848;margin:0 0 6px}
+#stats{font-size:13px;color:#c9558a;margin-bottom:16px}
+.card-wrap{animation:cardIn .7s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+#board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:400px;margin:0 auto}
+.memCard{aspect-ratio:1/1;perspective:600px;cursor:pointer}
+.memCardInner{position:relative;width:100%;height:100%;transition:transform .45s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.memCard.flipped .memCardInner,.memCard.matched .memCardInner{transform:rotateY(180deg)}
+.memFace{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:12px;backface-visibility:hidden;font-size:28px}
+.memFront{background:linear-gradient(135deg,#ff9dbe,#ff6f9f);color:#fff}
+.memFront svg{width:22px;height:22px}
+.memBack{background:#fff5f8;border:2px solid #ffd1e0;transform:rotateY(180deg)}
+.memCard.matched .memBack{border-color:#ff4f8b;background:#fff0f5}
+.memCard.matched{cursor:default}
+#winMsg{display:none;margin-top:18px;font-size:18px;color:#ff4f8b;font-weight:700}
+button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer;margin-top:18px;font-family:'Quicksand',Arial,sans-serif;font-weight:600;transition:transform .15s ease}
+button:hover{transform:translateY(-2px)}
+button:active{transform:translateY(0) scale(.96)}
+#hearts{position:fixed;inset:0;pointer-events:none}
+.heart{position:absolute;animation:f 7s linear forwards}
+@keyframes f{to{transform:translateY(-110vh);opacity:0}}
+#confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
+.confetti-piece{position:absolute;top:-20px;opacity:.95;animation:cf linear forwards}
+@keyframes cf{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+#backLink{display:inline-block;margin-top:14px;color:#c9558a;font-size:13px;text-decoration:none}
+@media (max-width:420px){#board{gap:7px}.memFace{font-size:22px}}
+</style></head><body>
+<div id="hearts"></div>
+<div id="confetti"></div>
+<div class="card-wrap">
+  <h1>Memory Game 💘</h1>
+  <p>Flip two cards at a time — find every pair</p>
+  <p>I know your memory sucks and I am here to help hehehe</p>
+  <div id="stats">Moves: <span id="moveCount">0</span> · Pairs found: <span id="pairCount">0</span>/<span id="pairTotal">0</span></div>
+  <div id="board"></div>
+  <div id="winMsg">You matched them all! 💘</div>
+  <button id="restartBtn">Restart 🔄</button><br>
+  <a id="backLink" href="index.html">← Back</a>
+</div>
+<script>
+// One emoji per pair — 8 pairs = 16 cards on a 4x4 board.
+const symbols = ["💘","💖","💕","💗","😘","😍","🐶","🪼","🐼","🤭"];
+
+const board = document.getElementById("board");
+const moveCountEl = document.getElementById("moveCount");
+const pairCountEl = document.getElementById("pairCount");
+const winMsg = document.getElementById("winMsg");
+const restartBtn = document.getElementById("restartBtn");
+
+let cards = [];
+let flipped = [];   // currently flipped, unmatched cards (max 2)
+let matchedCount = 0;
+let moves = 0;
+let lockBoard = false;
+
+function shuffle(arr){
+    for(let i=arr.length-1; i>0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+}
+
+function buildBoard(){
+    board.innerHTML = "";
+    flipped = [];
+    matchedCount = 0;
+    moves = 0;
+    lockBoard = false;
+    moveCountEl.textContent = "0";
+    pairCountEl.textContent = "0";
+    document.getElementById("pairTotal").textContent = symbols.length;
+    winMsg.style.display = "none";
+
+    cards = shuffle([...symbols, ...symbols]);
+
+    cards.forEach((symbol, idx) => {
+        const cardEl = document.createElement("div");
+        cardEl.className = "memCard";
+        cardEl.dataset.index = idx;
+        cardEl.innerHTML = `
+            <div class="memCardInner">
+                <div class="memFace memFront">?</div>
+                <div class="memFace memBack">${symbol}</div>
+            </div>`;
+        cardEl.addEventListener("click", () => flipCard(cardEl, idx));
+        board.appendChild(cardEl);
+    });
+}
+
+function flipCard(cardEl, idx){
+    if(lockBoard) return;
+    if(cardEl.classList.contains("flipped") || cardEl.classList.contains("matched")) return;
+    if(flipped.length === 2) return; // only two cards can be flipped at once
+
+    cardEl.classList.add("flipped");
+    flipped.push({ el: cardEl, idx });
+
+    if(flipped.length === 2){
+        moves++;
+        moveCountEl.textContent = moves;
+        checkMatch();
+    }
+}
+
+function checkMatch(){
+    const [a, b] = flipped;
+    const isMatch = cards[a.idx] === cards[b.idx];
+
+    if(isMatch){
+        a.el.classList.add("matched");
+        b.el.classList.add("matched");
+        flipped = [];
+        matchedCount++;
+        pairCountEl.textContent = matchedCount;
+        if(matchedCount === symbols.length) onWin();
+    } else {
+        lockBoard = true;
+        setTimeout(() => {
+            a.el.classList.remove("flipped");
+            b.el.classList.remove("flipped");
+            flipped = [];
+            lockBoard = false;
+        }, 800);
+    }
+}
+
+function onWin(){
+    winMsg.style.display = "block";
+    launchConfetti(100);
+}
+
+function launchConfetti(count){
+    const colors = ["#ff4f8b","#ff8fb4","#ffd1dc","#ffb6c1","#fff0f5","#ff6f9f"];
+    const confettiEl = document.getElementById("confetti");
+    for(let k=0; k<count; k++){
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        const size = 6 + Math.random()*8;
+        const isRound = Math.random() > 0.5;
+        piece.style.left = Math.random()*100 + "vw";
+        piece.style.width = size + "px";
+        piece.style.height = (isRound ? size : size*1.6) + "px";
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.borderRadius = isRound ? "50%" : "2px";
+        const duration = 2.5 + Math.random()*2;
+        const delay = Math.random()*0.4;
+        piece.style.animationDuration = duration + "s";
+        piece.style.animationDelay = delay + "s";
+        confettiEl.appendChild(piece);
+        setTimeout(() => piece.remove(), (duration+delay)*1000 + 200);
+    }
+}
+
+restartBtn.onclick = buildBoard;
+buildBoard();
+
+function heart(){
+    let h=document.createElement("div");
+    h.className="heart";
+    h.textContent=Math.random()>.5?"💘":"💖";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="-20px";
+    h.style.fontSize=(16+Math.random()*18)+"px";
+    document.getElementById("hearts").appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+}
+setInterval(heart,250);
+</script>
+</body></html>
