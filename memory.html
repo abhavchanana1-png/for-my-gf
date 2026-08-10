@@ -9,6 +9,8 @@ body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-cont
 h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;margin:0 0 4px}
 p{color:#7a2848;margin:0 0 6px}
 #stats{font-size:13px;color:#c9558a;margin-bottom:16px}
+#milestoneMsg{display:none;font-size:15px;color:#ff4f8b;font-weight:700;margin:-8px 0 14px;animation:milestonePop .5s ease both}
+@keyframes milestonePop{from{opacity:0;transform:translateY(-6px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
 .card-wrap{animation:cardIn .7s ease both}
 @keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 #board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:400px;margin:0 auto}
@@ -25,6 +27,8 @@ p{color:#7a2848;margin:0 0 6px}
 button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer;margin-top:18px;font-family:'Quicksand',Arial,sans-serif;font-weight:600;transition:transform .15s ease}
 button:hover{transform:translateY(-2px)}
 button:active{transform:translateY(0) scale(.96)}
+#restartBtn,#musicBtn{margin:18px 5px 0}
+#musicBtn.playing{background:#ff4f8b}
 #hearts{position:fixed;inset:0;pointer-events:none}
 .heart{position:absolute;animation:f 7s linear forwards}
 @keyframes f{to{transform:translateY(-110vh);opacity:0}}
@@ -41,11 +45,14 @@ button:active{transform:translateY(0) scale(.96)}
   <p>Flip two cards at a time — find every pair</p>
   <p>I know your memory sucks and I am here to help hehehe</p>
   <div id="stats">Moves: <span id="moveCount">0</span> · Pairs found: <span id="pairCount">0</span>/<span id="pairTotal">0</span></div>
+  <div id="milestoneMsg">Almost there my love 💘</div>
   <div id="board"></div>
   <div id="winMsg">You matched them all! 💘</div>
-  <button id="restartBtn">Restart 🔄</button><br>
+  <button id="restartBtn">Restart 🔄</button>
+  <button id="musicBtn">🎵 Music</button><br>
   <a id="backLink" href="index.html">← Back</a>
 </div>
+<audio id="bgMusic" src="music.mp3" preload="none" loop></audio>
 <script>
 // One emoji per pair — 8 pairs = 16 cards on a 4x4 board.
 const symbols = ["💘","💖","💕","💗","😘","😍","🐶","🪼","🐼","🤭"];
@@ -55,12 +62,57 @@ const moveCountEl = document.getElementById("moveCount");
 const pairCountEl = document.getElementById("pairCount");
 const winMsg = document.getElementById("winMsg");
 const restartBtn = document.getElementById("restartBtn");
+const musicBtn = document.getElementById("musicBtn");
+const bgMusic = document.getElementById("bgMusic");
 
 let cards = [];
 let flipped = [];   // currently flipped, unmatched cards (max 2)
 let matchedCount = 0;
 let moves = 0;
 let lockBoard = false;
+
+// ---------------- Sound effects (Web Audio, no extra files needed) ----------------
+let audioCtx;
+function ensureAudioCtx(){
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+}
+function beep(freq, duration, type, vol, startDelay){
+    const ctx = ensureAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.value = freq;
+    gain.gain.value = vol || 0.15;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    const t0 = ctx.currentTime + (startDelay || 0);
+    osc.start(t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+    osc.stop(t0 + duration + 0.02);
+}
+function playFlip(){ beep(480, 0.05, "triangle", 0.1, 0); }
+function playMismatch(){ beep(220, 0.12, "sine", 0.1, 0); }
+function playMatchChime(){
+    [659.25,880].forEach((f,idx)=> beep(f, 0.14, "sine", 0.13, idx*0.09));
+}
+function playWinChime(){
+    [523.25,659.25,783.99,1046.5].forEach((f,idx)=> beep(f, 0.18, "sine", 0.14, idx*0.12));
+}
+
+// ---------------- Background music toggle ----------------
+musicBtn.onclick = () => {
+    if(bgMusic.paused){
+        bgMusic.play().catch(() => {});
+        musicBtn.textContent = "🔇 Pause Music";
+        musicBtn.classList.add("playing");
+    } else {
+        bgMusic.pause();
+        musicBtn.textContent = "🎵 Music";
+        musicBtn.classList.remove("playing");
+    }
+};
 
 function shuffle(arr){
     for(let i=arr.length-1; i>0; i--){
@@ -80,6 +132,7 @@ function buildBoard(){
     pairCountEl.textContent = "0";
     document.getElementById("pairTotal").textContent = symbols.length;
     winMsg.style.display = "none";
+    document.getElementById("milestoneMsg").style.display = "none";
 
     cards = shuffle([...symbols, ...symbols]);
 
@@ -104,6 +157,7 @@ function flipCard(cardEl, idx){
 
     cardEl.classList.add("flipped");
     flipped.push({ el: cardEl, idx });
+    playFlip();
 
     if(flipped.length === 2){
         moves++;
@@ -122,9 +176,12 @@ function checkMatch(){
         flipped = [];
         matchedCount++;
         pairCountEl.textContent = matchedCount;
+        playMatchChime();
+        if(matchedCount === 5) document.getElementById("milestoneMsg").style.display = "block";
         if(matchedCount === symbols.length) onWin();
     } else {
         lockBoard = true;
+        playMismatch();
         setTimeout(() => {
             a.el.classList.remove("flipped");
             b.el.classList.remove("flipped");
@@ -135,7 +192,18 @@ function checkMatch(){
 }
 
 function onWin(){
+    const perfect = symbols.length;
+    let msg;
+    if(moves <= perfect + 2){
+        msg = "Wow, sharp memory today 👀💘";
+    } else if(moves <= perfect * 2){
+        msg = "You matched them all! 💘";
+    } else {
+        msg = "Hehe, needed a little help — but you got there! 💖";
+    }
+    winMsg.textContent = msg;
     winMsg.style.display = "block";
+    playWinChime();
     launchConfetti(100);
 }
 
