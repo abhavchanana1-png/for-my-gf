@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shhh 🤫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
+.card{font-family:'Quicksand',Arial,sans-serif;background:#ffffffcc;padding:30px;border-radius:20px;max-width:520px;width:92%;box-sizing:border-box;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;margin-top:0}
+p{color:#7a2848}
+.card{animation:cardIn .7s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.fade-in{animation:fadeIn .8s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+#choices{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:22px}
+.choiceBtn{padding:16px 26px;border:none;border-radius:20px;color:#fff;cursor:pointer;font-family:'Quicksand',Arial,sans-serif;font-weight:700;font-size:16px;min-width:110px;transition:transform .15s ease, box-shadow .15s ease}
+.choiceBtn:hover{transform:translateY(-2px)}
+.choiceBtn:active{transform:translateY(0) scale(.96)}
+#blueBtn{background:#4f8bff;box-shadow:0 4px 12px rgba(79,139,255,.3)}
+#pinkBtn{background:#ff6f9f;box-shadow:0 4px 12px rgba(255,111,159,.3)}
+#yellowBtn{background:#f5c542;box-shadow:0 4px 12px rgba(245,197,66,.3)}
+#result{display:none;margin-top:22px}
+#resultText{font-size:19px;color:#7a2848;font-weight:700;margin:0 0 14px}
+#resultImg{max-width:100%;border-radius:16px;display:none}
+#hearts{position:fixed;inset:0;pointer-events:none}
+.heart{position:absolute;animation:f 7s linear forwards}
+@keyframes f{to{transform:translateY(-110vh);opacity:0}}
+#backLink{display:inline-block;margin-top:24px;color:#c9558a;font-size:13px;text-decoration:none}
+</style></head><body>
+<div id="hearts"></div>
+<div class="card">
+  <h1>Shhh 🤫</h1>
+  <p>Just between us... pick one 💘</p>
+  <div id="choices">
+    <button id="blueBtn" class="choiceBtn">💙</button>
+    <button id="pinkBtn" class="choiceBtn">💗</button>
+    <button id="yellowBtn" class="choiceBtn">💛</button>
+  </div>
+  <div id="result">
+    <p id="resultText"></p>
+    <img id="resultImg" alt="">
+  </div>
+  <a id="backLink" href="index.html">← Back</a>
+</div>
+<script>
+function reveal(el){
+    el.style.display = "block";
+    el.classList.remove("fade-in");
+    void el.offsetWidth;
+    el.classList.add("fade-in");
+}
+const resultEl = document.getElementById("result");
+const resultTextEl = document.getElementById("resultText");
+const resultImgEl = document.getElementById("resultImg");
+function pick(text, img){
+    resultTextEl.textContent = text;
+    resultImgEl.style.display = "none";
+    resultImgEl.onload = () => { resultImgEl.style.display = "block"; };
+    resultImgEl.onerror = () => { resultImgEl.style.display = "none"; };
+    resultImgEl.src = img;
+    reveal(resultEl);
+}
+// Drop son.jpeg, daughter.jpeg and twins.jpeg next to this file — each button
+// will show its picture once clicked. If a file is missing, the text still
+// shows on its own.
+document.getElementById("blueBtn").onclick = () => pick("It's a son 💙", "son.jpeg");
+document.getElementById("pinkBtn").onclick = () => pick("It's a daughter 💗", "daughter.jpeg");
+document.getElementById("yellowBtn").onclick = () => pick("It's twins 💛", "twins.jpeg");
+
+function heart(){
+    let h=document.createElement("div");
+    h.className="heart";
+    h.textContent=Math.random()>.5?"💘":"💖";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="-20px";
+    h.style.fontSize=(16+Math.random()*18)+"px";
+    document.getElementById("hearts").appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+}
+setInterval(heart,250);
+</script>
+</body></html>
