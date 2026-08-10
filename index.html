@@ -394,6 +394,10 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   <p id="gameLockedNote" style="display:none;color:#c9558a;font-size:12.5px;margin:6px 0 0">Unlocks on Girlfriend's Day 💘</p>
 </div>
 
+<div id="shhhLink" style="display:none;margin-top:18px">
+  <a id="shhhBtn" href="shhh.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Shhh 🤫</a>
+</div>
+
 <div id="forever"><button id="foreverBtn">Forever 💘</button></div>
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi 💘<br>— Abhav</h2>
 </div>
@@ -626,6 +630,7 @@ function showRevealedContent(){
     reveal(document.getElementById("giftsLink"));
     reveal(document.getElementById("gameLink"));
     setupGirlfriendsDayLocks();
+    setupShhhLock();
     reveal(forever);
 }
 
@@ -656,6 +661,17 @@ function setupLockedButton(btnId, noteId, unlockedText, lockedText, unlocked){
         btn.onclick = (e) => {
             e.preventDefault();
         };
+    }
+}
+
+// ---------------- Button hidden until tomorrow ----------------
+// "Tomorrow" is a fixed calendar date (the day after this was set up), not a
+// rolling 24-hour timer — so update SHHH_UNLOCK_DATE if you reuse this later.
+const SHHH_UNLOCK_DATE = new Date(2026, 7, 11); // 11 August 2026, Spain time
+function setupShhhLock(){
+    const now = getSpainNow();
+    if(now >= SHHH_UNLOCK_DATE){
+        reveal(document.getElementById("shhhLink"));
     }
 }
 
