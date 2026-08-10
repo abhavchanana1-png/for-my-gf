@@ -120,6 +120,12 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 /* --- anniversary countdown --- */
 #anniversary{font-size:14px;color:#c9558a;margin-top:4px}
 
+/* --- voice message buttons --- */
+#voiceMsgTitle{font-size:15px;color:#ff4f8b;font-weight:bold;margin:22px 0 8px}
+#voiceMsgRow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.voiceBtn{position:relative}
+.voiceBtn.playing{background:#ff4f8b;box-shadow:0 0 0 4px rgba(255,79,139,.2)}
+
 /* --- rotating photo carousel --- */
 #galleryTitle{font-size:15px;color:#ff4f8b;font-weight:bold;margin:22px 0 8px}
 .carousel{
@@ -364,6 +370,17 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 <audio id="song"></audio>
 <!-- Drop a bark.mp3 next to this file to use a real bark sound; otherwise a synthesized woof plays automatically -->
 <audio id="barkSound" src="bark.mp3" preload="none"></audio>
+
+<p id="voiceMsgTitle">Press for a little message 💘</p>
+<!-- Drop goodmorning.mp3, goodnight.mp3 and iloveyou.mp3 next to this file for these to play -->
+<div id="voiceMsgRow">
+  <button class="voiceBtn" id="goodMorningBtn">☀️ Good Morning</button>
+  <button class="voiceBtn" id="goodNightBtn">🌙 Good Night</button>
+  <button class="voiceBtn" id="loveYouBtn">💘 I Love You</button>
+</div>
+<audio id="goodMorningSound" src="goodmorning.mp3" preload="none"></audio>
+<audio id="goodNightSound" src="goodnight.mp3" preload="none"></audio>
+<audio id="loveYouSound" src="iloveyou.mp3" preload="none"></audio>
 
 <p id="galleryTitle" style="display:none">Our Photos 📷</p>
 <div class="carouselWrap">
@@ -1048,6 +1065,32 @@ function heart(){
     document.getElementById("hearts").appendChild(h);
     setTimeout(()=>h.remove(),7000);
 }
+
+// ---------------- Voice message buttons ----------------
+const voiceClips = [
+    { btn: document.getElementById("goodMorningBtn"), audio: document.getElementById("goodMorningSound") },
+    { btn: document.getElementById("goodNightBtn"),   audio: document.getElementById("goodNightSound") },
+    { btn: document.getElementById("loveYouBtn"),     audio: document.getElementById("loveYouSound") }
+];
+voiceClips.forEach(clip => {
+    clip.btn.addEventListener("click", () => {
+        const alreadyPlaying = !clip.audio.paused;
+        // stop every clip first so only one plays at a time
+        voiceClips.forEach(c => {
+            c.audio.pause();
+            c.audio.currentTime = 0;
+            c.btn.classList.remove("playing");
+        });
+        if(alreadyPlaying) return; // tapping the playing one again just stops it
+        clip.audio.currentTime = 0;
+        const p = clip.audio.play();
+        clip.btn.classList.add("playing");
+        if(p !== undefined){
+            p.catch(() => { clip.btn.classList.remove("playing"); });
+        }
+        clip.audio.onended = () => clip.btn.classList.remove("playing");
+    });
+});
 
 // ---------------- Jellyfish easter egg ----------------
 const jellyfish = document.getElementById("jellyfish");
