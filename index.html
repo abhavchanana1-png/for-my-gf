@@ -398,6 +398,10 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   <a id="shhhBtn" href="shhh.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Shhh 🤫</a>
 </div>
 
+<div id="memoryLink" style="display:none;margin-top:18px">
+  <a id="memoryBtn" href="memory.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Memory Game 💘</a>
+</div>
+
 <div id="forever"><button id="foreverBtn">Forever 💘</button></div>
 <h2 id="final">No matter where life takes us,<br>I'll always choose you.<br>I love you Sofi 💘<br>— Abhav</h2>
 </div>
@@ -631,6 +635,7 @@ function showRevealedContent(){
     reveal(document.getElementById("gameLink"));
     setupGirlfriendsDayLocks();
     setupShhhLock();
+    setupMemoryLock();
     reveal(forever);
 }
 
@@ -672,6 +677,17 @@ function setupShhhLock(){
     const now = getSpainNow();
     if(now >= SHHH_UNLOCK_DATE){
         reveal(document.getElementById("shhhLink"));
+    }
+}
+
+// ---------------- Memory Game hidden until tomorrow ----------------
+// Same fixed-date approach as the Shhh button above — not a rolling 24-hour
+// timer, so update MEMORY_UNLOCK_DATE if you reuse this later.
+const MEMORY_UNLOCK_DATE = new Date(2026, 7, 11); // 11 August 2026, Spain time
+function setupMemoryLock(){
+    const now = getSpainNow();
+    if(now >= MEMORY_UNLOCK_DATE){
+        reveal(document.getElementById("memoryLink"));
     }
 }
 
