@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who's More Likely? 💘</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Quicksand',Arial,sans-serif;padding:16px;box-sizing:border-box}
+.card{background:#ffffffcc;padding:30px;border-radius:20px;max-width:460px;width:100%;box-sizing:border-box;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1);position:relative;animation:cardIn .5s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;font-size:26px;margin:0 0 6px}
+#backLink{display:inline-block;margin-bottom:14px;color:#c9558a;font-size:13px;text-decoration:none}
+#backLink:hover{text-decoration:underline}
+button,#quizRestartBtn{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer;margin:6px;font-family:'Quicksand',Arial,sans-serif;font-weight:600;font-size:15px;transition:transform .15s ease, box-shadow .15s ease}
+button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(255,79,139,.3)}
+button:active{transform:translateY(0) scale(.96)}
+#quizProgress{font-size:12.5px;color:#c9558a;letter-spacing:.5px;text-transform:uppercase;margin:0 0 10px}
+#quizQuestion{font-size:20px;color:#7a2848;font-weight:700;margin:0 0 20px;line-height:1.4}
+#quizOptions{display:flex;flex-direction:column;gap:10px}
+.quizOption{background:#fff5f8;color:#ff4f8b;border:2px solid #ffd1e0;border-radius:16px;padding:13px 16px;font-family:'Quicksand',Arial,sans-serif;font-weight:600;font-size:15.5px;cursor:pointer;transition:transform .12s ease,background .12s ease}
+.quizOption:hover{background:#ffe6ee;transform:translateY(-1px)}
+.quizOption:active{transform:translateY(0) scale(.97)}
+.quizOption.picked{background:#ff6f9f;color:#fff;border-color:#ff6f9f}
+#quizBar{height:6px;background:#ffe1ec;border-radius:4px;margin:0 0 18px;overflow:hidden}
+#quizBarFill{height:100%;background:#ff6f9f;border-radius:4px;transition:width .25s ease;width:0%}
+#quizResults{display:none}
+#quizResultsTitle{font-size:22px;color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal;margin:4px 0 14px}
+#quizResultsBody{font-size:14.5px;color:#7a2848;line-height:1.6;text-align:left;max-height:340px;overflow-y:auto;padding-right:4px;margin-bottom:6px}
+#quizResultsBody .qrRow{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #ffe6ee}
+#quizResultsBody .qrQ{flex:1}
+#quizResultsBody .qrA{font-weight:700;color:#ff4f8b;white-space:nowrap}
+#confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
+.confetti-piece{position:absolute;top:-20px;opacity:.95;animation:cf linear forwards}
+@keyframes cf{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@media (max-width:480px){
+  .card{padding:22px 16px}
+  #quizQuestion{font-size:18px}
+}
+</style></head><body>
+<div id="confetti"></div>
+<div class="card">
+  <a id="backLink" href="index.html">&larr; Back</a>
+  <h1>Who's More Likely? 💘</h1>
+  <div id="quizPlay">
+    <div id="quizBar"><div id="quizBarFill"></div></div>
+    <p id="quizProgress"></p>
+    <p id="quizQuestion"></p>
+    <div id="quizOptions"></div>
+  </div>
+  <div id="quizResults">
+    <p id="quizResultsTitle">Here's how it went 💘</p>
+    <div id="quizResultsBody"></div>
+    <button id="quizRestartBtn">Play again 💘</button>
+  </div>
+</div>
+<script>
+const quizQuestions = [
+    "Who is more likely to say \"I miss you\" first?",
+    "Who is more likely to plan a surprise date?",
+    "Who is more likely to remember an important date?",
+    "Who is more likely to give the better gift?",
+    "Who is more likely to want to spend all day together?",
+    "Who is more likely to get jealous?",
+    "Who is more likely to apologize first after an argument?",
+    "Who is more likely to start a deep conversation at 2 AM?",
+    "Who is more likely to reread old messages?",
+    "Who is more likely to save every photo of the other?",
+    "Who is more likely to fall asleep during a call?",
+    "Who is more likely to leave the other on delivered?",
+    "Who is more likely to stalk the other's Instagram?",
+    "Who is more likely to check who liked their partner's post?",
+    "Who is more likely to start an argument over something tiny?",
+    "Who is more likely to say \"I'm not hungry\" and then eat the other's food?",
+    "Who is more likely to be late?",
+    "Who is more likely to lose their phone?",
+    "Who is more likely to spend €100 without thinking about it?",
+    "Who is more likely to laugh at the worst possible moment?",
+    "Who is more stubborn?",
+    "Who is more competitive?",
+    "Who is more emotional?",
+    "Who is more patient?",
+    "Who is more dramatic?",
+    "Who is more likely to overthink a text?",
+    "Who is more likely to hold a grudge?",
+    "Who is more likely to admit they are wrong?",
+    "Who is more likely to know when something is wrong without being told?",
+    "Who is more likely to make the other laugh when they are upset?",
+    "Who fell first?",
+    "Who fell harder?",
+    "Who knows the other better?",
+    "Who is more likely to initiate a video call?",
+    "Who is more likely to need reassurance?",
+    "Who is more likely to say \"we need to talk\" and scare the other?",
+    "Who is more likely to bring up something from months ago during an argument?",
+    "Who is more likely to make up first after a fight?",
+    "Who is more likely to turn a small disagreement into a huge discussion?",
+    "Who is more likely to secretly know exactly what gift the other wants?",
+    "Who is more likely to suggest a spontaneous trip together?",
+    "Who is more likely to survive longer in a zombie apocalypse?",
+    "Who is more likely to cheat at a board game?",
+    "Who is more likely to refuse to admit they lost?",
+    "Who is more likely to become famous?",
+    "Who is more likely to become rich?",
+    "Who would be the stricter parent?",
+    "Who would spoil the kids more?",
+    "Who would spend all the vacation money?",
+    "Who would be more devastated if you had to spend a year apart?",
+    "Who loves the other more?"
+];
+const quizOptionLabels = ["Abhav", "Sofia", "Both", "None"];
+
+const quizPlay = document.getElementById("quizPlay");
+const quizResults = document.getElementById("quizResults");
+const quizProgress = document.getElementById("quizProgress");
+const quizQuestionEl = document.getElementById("quizQuestion");
+const quizOptionsEl = document.getElementById("quizOptions");
+const quizBarFill = document.getElementById("quizBarFill");
+const quizResultsBody = document.getElementById("quizResultsBody");
+const quizRestartBtn = document.getElementById("quizRestartBtn");
+
+let quizIndex = 0;
+let quizAnswers = [];
+
+function startQuiz(){
+    quizIndex = 0;
+    quizAnswers = [];
+    quizResults.style.display = "none";
+    quizPlay.style.display = "block";
+    renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+    quizProgress.textContent = "Question " + (quizIndex+1) + " of " + quizQuestions.length;
+    quizBarFill.style.width = (quizIndex / quizQuestions.length * 100) + "%";
+    quizQuestionEl.textContent = quizQuestions[quizIndex];
+    quizOptionsEl.innerHTML = "";
+    quizOptionLabels.forEach(label => {
+        const b = document.createElement("button");
+        b.className = "quizOption";
+        b.textContent = label;
+        b.onclick = () => pickQuizAnswer(label, b);
+        quizOptionsEl.appendChild(b);
+    });
+}
+
+function pickQuizAnswer(label, btnEl){
+    btnEl.classList.add("picked");
+    quizAnswers.push(label);
+    setTimeout(() => {
+        if(quizIndex < quizQuestions.length - 1){
+            quizIndex++;
+            renderQuizQuestion();
+        } else {
+            showQuizResults();
+        }
+    }, 220);
+}
+
+function showQuizResults(){
+    quizBarFill.style.width = "100%";
+    quizPlay.style.display = "none";
+    quizResultsBody.innerHTML = "";
+    quizQuestions.forEach((q, idx) => {
+        const row = document.createElement("div");
+        row.className = "qrRow";
+        row.innerHTML = "<span class=\"qrQ\">" + q + "</span><span class=\"qrA\">" + quizAnswers[idx] + "</span>";
+        quizResultsBody.appendChild(row);
+    });
+    quizResults.style.display = "block";
+    launchConfetti(80);
+}
+
+quizRestartBtn.onclick = startQuiz;
+
+function launchConfetti(count){
+    const colors = ["#ff4f8b","#ff8fb4","#ffd1dc","#ffb6c1","#fff0f5","#ff6f9f"];
+    const confettiEl = document.getElementById("confetti");
+    const n = count || 80;
+    for(let k=0; k<n; k++){
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        const size = 6 + Math.random()*8;
+        const isRound = Math.random() > 0.5;
+        piece.style.left = Math.random()*100 + "vw";
+        piece.style.width = size + "px";
+        piece.style.height = (isRound ? size : size*1.6) + "px";
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.borderRadius = isRound ? "50%" : "2px";
+        const duration = 2.5 + Math.random()*2;
+        const delay = Math.random()*0.4;
+        piece.style.animationDuration = duration + "s";
+        piece.style.animationDelay = delay + "s";
+        confettiEl.appendChild(piece);
+        setTimeout(() => piece.remove(), (duration+delay)*1000 + 200);
+    }
+}
+
+startQuiz();
+</script>
+</body></html>
