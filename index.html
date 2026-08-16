@@ -222,6 +222,8 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 #reasonNumber{font-size:12px;color:#c9558a;letter-spacing:1px;text-transform:uppercase}
 #reasonText{font-size:17px;color:#7a2848;margin:8px 0 0;line-height:1.5}
 
+#quizLink{margin-top:18px}
+
 /* --- mobile tweaks --- */
 @media (max-width:480px){
   body{padding:16px 0;box-sizing:border-box;align-items:flex-start}
@@ -418,6 +420,10 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 
 <div id="memoryLink" style="display:none;margin-top:18px">
   <a id="memoryBtn" href="memory.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Memory Game 💘</a>
+</div>
+
+<div id="quizLink" style="display:none">
+  <a id="quizBtn" href="quiz.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Who's More Likely? 💘</a>
 </div>
 
 <div id="forever"><button id="foreverBtn">Forever 💘</button></div>
@@ -651,6 +657,7 @@ function showRevealedContent(){
     reveal(document.getElementById("calendarLink"));
     reveal(document.getElementById("giftsLink"));
     reveal(document.getElementById("gameLink"));
+    reveal(document.getElementById("quizLink"));
     setupGirlfriendsDayLocks();
     setupShhhLock();
     setupMemoryLock();
