@@ -5,18 +5,96 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
 <style>
-body{margin:0;background:linear-gradient(#ffeef5,#fff);display:flex;justify-content:center;align-items:center;min-height:100vh}
-.card{font-family:'Quicksand',Arial,sans-serif;background:#ffffffcc;padding:30px;border-radius:20px;max-width:700px;width:92%;box-sizing:border-box;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-h1{color:#ff4f8b;font-family:'Pacifico',cursive;font-weight:normal}button{padding:12px 24px;border:none;border-radius:30px;background:#ff6f9f;color:#fff;cursor:pointer;margin:6px;font-family:'Quicksand',Arial,sans-serif;font-weight:600;transition:transform .15s ease, box-shadow .15s ease}
-button:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(255,79,139,.3)}
-button:active{transform:translateY(0) scale(.96)}
-.card{animation:cardIn .7s ease both}
+:root{
+  --pink:#ff4f8b;
+  --pink-dark:#e0356b;
+  --pink-mid:#ff6f9f;
+  --pink-soft:#ff8fb4;
+  --pink-pale:#ffe1ec;
+  --pink-paler:#fff0f5;
+  --text:#5b3548;
+  --text-soft:#c9558a;
+  --text-deep:#7a2848;
+  --shadow-sm:0 2px 8px rgba(224,53,107,.12);
+  --shadow-md:0 8px 24px rgba(224,53,107,.14);
+  --shadow-lg:0 14px 40px rgba(224,53,107,.16);
+  --radius-lg:24px;
+  --radius-md:18px;
+  --radius-sm:14px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:32px 16px;
+  background:radial-gradient(circle at 50% 0%,#fff5f8 0%,#fff 62%);
+  font-family:'Quicksand',Arial,sans-serif;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+.card{
+  position:relative;
+  background:#ffffffd9;
+  backdrop-filter:blur(6px);
+  padding:40px 36px;
+  border-radius:var(--radius-lg);
+  max-width:640px;
+  width:92%;
+  box-sizing:border-box;
+  text-align:center;
+  border:1px solid #ffe4ee;
+  box-shadow:var(--shadow-lg);
+  animation:cardIn .7s ease both;
+}
 @keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+h1{
+  color:var(--pink);
+  font-family:'Pacifico',cursive;
+  font-weight:normal;
+  font-size:32px;
+  margin:0 0 6px;
+  letter-spacing:.3px;
+}
+.card > p{
+  color:var(--text-soft);
+  font-size:15px;
+  margin:0 0 22px;
+  line-height:1.6;
+}
+
+button, .btn{
+  padding:13px 26px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(135deg,var(--pink) 0%,var(--pink-mid) 100%);
+  color:#fff;
+  cursor:pointer;
+  margin:6px;
+  font-family:'Quicksand',Arial,sans-serif;
+  font-weight:600;
+  font-size:15px;
+  letter-spacing:.2px;
+  box-shadow:var(--shadow-sm);
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+button:hover, .btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+button:active, .btn:active{transform:translateY(0) scale(.96)}
+.btn{display:inline-block;text-decoration:none;margin-top:8px}
+
 #open{animation:pulse 1.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
 #photo,#counter,#anniversary,#quote,#forever,#musicRow,#final,#puzzleContainer,#gallery{display:none}
-img{max-width:100%;border-radius:16px;margin-top:20px}
-#hearts{position:fixed;inset:0;pointer-events:none}.heart{position:absolute;animation:f 7s linear forwards}@keyframes f{to{transform:translateY(-110vh);opacity:0}}
+#letter{white-space:pre-wrap;line-height:1.7;font-size:15.5px;color:var(--text-deep)}
+img{max-width:100%;border-radius:var(--radius-md);margin-top:20px;box-shadow:var(--shadow-sm)}
+
+#hearts{position:fixed;inset:0;pointer-events:none}
+.heart{position:absolute;animation:f 7s linear forwards}
+@keyframes f{to{transform:translateY(-110vh);opacity:0}}
 #confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
 .confetti-piece{position:absolute;top:-20px;opacity:.95;animation:cf linear forwards}
 @keyframes cf{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
@@ -30,13 +108,13 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 @keyframes jellyFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
 #jellyBubble{
   display:none;position:fixed;bottom:60px;right:16px;z-index:41;
-  background:#fff;border:1px solid #ffd1e0;border-radius:16px;padding:12px 18px;
-  box-shadow:0 6px 18px rgba(255,79,139,.2);text-align:center;font-family:'Quicksand',Arial,sans-serif;
+  background:#fff;border:1px solid var(--pink-pale);border-radius:var(--radius-sm);padding:12px 18px;
+  box-shadow:var(--shadow-md);text-align:center;font-family:'Quicksand',Arial,sans-serif;
   animation:jellyPop .3s ease both;
 }
 @keyframes jellyPop{from{opacity:0;transform:scale(.7) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
-#jellyBubble p{margin:0;color:#7a2848;font-size:15px}
-#jellyBubble .jellyWord{color:#ff4f8b;font-weight:bold;font-size:19px;margin-top:2px}
+#jellyBubble p{margin:0;color:var(--text-deep);font-size:15px}
+#jellyBubble .jellyWord{color:var(--pink);font-weight:bold;font-size:19px;margin-top:2px}
 
 /* --- golden retriever easter egg --- */
 #doggo{
@@ -47,11 +125,11 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 @keyframes doggoBounce{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-6px) rotate(-6deg)}75%{transform:translateY(-6px) rotate(6deg)}}
 #doggoBubble{
   display:none;position:fixed;top:calc(75% - 90px);left:12px;z-index:41;
-  background:#fff;border:1px solid #ffe0b0;border-radius:16px;padding:12px 18px;
-  box-shadow:0 6px 18px rgba(224,168,85,.25);text-align:center;font-family:'Quicksand',Arial,sans-serif;
+  background:#fff;border:1px solid #ffe0b0;border-radius:var(--radius-sm);padding:12px 18px;
+  box-shadow:0 8px 20px rgba(224,168,85,.25);text-align:center;font-family:'Quicksand',Arial,sans-serif;
   animation:jellyPop .3s ease both;
 }
-#doggoBubble p{margin:0;color:#7a2848;font-weight:bold;font-size:16px}
+#doggoBubble p{margin:0;color:var(--text-deep);font-weight:bold;font-size:16px}
 
 /* --- little explorer easter egg --- */
 #explorer{
@@ -62,8 +140,8 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 @keyframes explorerWiggle{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
 #explorerBubble{
   display:none;position:fixed;bottom:78px;left:14px;z-index:41;
-  background:#fff;border:1px solid #bfe8d4;border-radius:16px;padding:12px 18px;
-  box-shadow:0 6px 18px rgba(90,175,140,.25);text-align:center;font-family:'Quicksand',Arial,sans-serif;
+  background:#fff;border:1px solid #bfe8d4;border-radius:var(--radius-sm);padding:12px 18px;
+  box-shadow:0 8px 20px rgba(90,175,140,.25);text-align:center;font-family:'Quicksand',Arial,sans-serif;
   animation:jellyPop .3s ease both;
 }
 #explorerBubble p{margin:0;color:#2e6b52;font-weight:bold;font-size:16px}
@@ -73,11 +151,11 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* --- Jigsaw puzzle --- */
-#puzzleContainer{margin-top:20px}
-#puzzleMsg{font-weight:bold;color:#ff4f8b;margin:10px 0 2px}
-#puzzleProgress{font-size:13px;color:#c9558a;margin:0 0 10px}
+#puzzleContainer{margin-top:24px}
+#puzzleMsg{font-weight:600;color:var(--pink);margin:0 0 4px;font-size:15px;line-height:1.5}
+#puzzleProgress{font-size:13px;color:var(--text-soft);margin:0 0 12px}
 .puzzleWrap{position:relative;width:100%;max-width:560px;margin:0 auto}
-#hintImg{position:absolute;inset:0;background-image:url('photo.jpeg');background-size:cover;background-position:center;opacity:.18;border-radius:16px}
+#hintImg{position:absolute;inset:0;background-image:url('photo.jpeg');background-size:cover;background-position:center;opacity:.16;border-radius:var(--radius-md)}
 #puzzle{
   position:relative;
   z-index:1;
@@ -87,9 +165,10 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   gap:3px;
   width:100%;
   aspect-ratio:16/9;
-  border-radius:16px;
+  border-radius:var(--radius-md);
   overflow:hidden;
   background:transparent;
+  box-shadow:var(--shadow-sm);
 }
 .piece{
   background-image:url('photo.jpeg');
@@ -100,44 +179,48 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 }
 .piece:hover{filter:brightness(1.05)}
 .piece.selected{
-  outline:4px solid #ff4f8b;
+  outline:4px solid var(--pink);
   outline-offset:-4px;
   filter:brightness(1.1);
   transform:scale(.96);
 }
+#skipPuzzle{background:transparent;color:var(--text-soft);box-shadow:none;font-size:13px;padding:6px 10px;font-weight:500}
+#skipPuzzle:hover{transform:none;box-shadow:none;text-decoration:underline}
 
 /* --- music controls --- */
+#musicRow{margin-top:24px;padding-top:20px;border-top:1px solid var(--pink-pale)}
 #musicRow button{min-width:120px}
-#trackLabel{font-size:13px;color:#c9558a;margin-top:6px}
-#seekRow{display:flex;align-items:center;gap:8px;max-width:340px;margin:10px auto 0}
-#seekRow span{font-size:11px;color:#c9558a;min-width:32px}
-#seekBar{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;background:#ffd1e0;outline:none;cursor:pointer}
-#seekBar::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:#ff4f8b;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-#seekBar::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#ff4f8b;cursor:pointer;border:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-.musicControls{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
 .musicControls button.small{min-width:auto;padding:10px 14px}
+#trackLabel{font-size:13px;color:var(--text-soft);margin-top:8px}
+#seekRow{display:flex;align-items:center;gap:8px;max-width:340px;margin:12px auto 0}
+#seekRow span{font-size:11px;color:var(--text-soft);min-width:32px}
+#seekBar{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:4px;background:var(--pink-pale);outline:none;cursor:pointer}
+#seekBar::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--pink);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+#seekBar::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--pink);cursor:pointer;border:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.musicControls{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
 
 /* --- anniversary countdown --- */
-#anniversary{font-size:14px;color:#c9558a;margin-top:4px}
+#anniversary{font-size:14px;color:var(--text-soft);margin-top:6px}
+#counter{font-size:15px;line-height:1.6}
 
 /* --- voice message buttons --- */
-#voiceMsgTitle{font-size:15px;color:#ff4f8b;font-weight:bold;margin:22px 0 8px}
+#voiceMsgTitle{font-size:15px;color:var(--pink);font-weight:700;margin:26px 0 10px}
 #voiceMsgRow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 .voiceBtn{position:relative}
-.voiceBtn.playing{background:#ff4f8b;box-shadow:0 0 0 4px rgba(255,79,139,.2)}
+.voiceBtn.playing{background:var(--pink);box-shadow:0 0 0 4px rgba(255,79,139,.2)}
 
 /* --- rotating photo carousel --- */
-#galleryTitle{font-size:15px;color:#ff4f8b;font-weight:bold;margin:22px 0 8px}
+#galleryTitle{font-size:15px;color:var(--pink);font-weight:700;margin:26px 0 10px}
 .carousel{
   position:relative;
   max-width:420px;
   aspect-ratio:1/1;
   margin:0 auto;
-  border-radius:18px;
+  border-radius:var(--radius-md);
   overflow:hidden;
   background:#fffdfe;
-  border:1px solid #ffe1ec;
-  box-shadow:0 4px 16px rgba(255,79,139,.08);
+  border:1px solid var(--pink-pale);
+  box-shadow:var(--shadow-sm);
   touch-action:pan-y;
 }
 .carousel img{
@@ -148,6 +231,7 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
   object-fit:cover;
   border-radius:0;
   margin-top:0;
+  box-shadow:none;
   opacity:0;
   transition:opacity .8s ease;
 }
@@ -156,27 +240,27 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 .carouselArrow{
   position:absolute;top:50%;transform:translateY(-50%);
   width:34px;height:34px;border-radius:50%;
-  background:#ffffffcc;color:#ff4f8b;border:none;
+  background:#ffffffe6;color:var(--pink);border:none;
   font-size:14px;line-height:1;padding:0;margin:0;
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);
+  cursor:pointer;box-shadow:var(--shadow-sm);
   transition:transform .15s ease, background .15s ease;
   z-index:2;
 }
-.carouselArrow:hover{background:#fff;transform:translateY(-50%) scale(1.08)}
+.carouselArrow:hover{background:#fff;transform:translateY(-50%) scale(1.08);box-shadow:var(--shadow-sm)}
 .carouselArrow:active{transform:translateY(-50%) scale(.94)}
 .carouselArrow-left{left:8px}
 .carouselArrow-right{right:8px}
-#carouselDots{display:flex;justify-content:center;gap:6px;margin-top:10px}
-.carouselDot{width:7px;height:7px;border-radius:50%;background:#ffd1e0;cursor:pointer;transition:background .2s,transform .2s}
-.carouselDot.active{background:#ff4f8b;transform:scale(1.25)}
+#carouselDots{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.carouselDot{width:7px;height:7px;border-radius:50%;background:var(--pink-pale);cursor:pointer;transition:background .2s,transform .2s}
+.carouselDot.active{background:var(--pink);transform:scale(1.25)}
 
 /* --- Girlfriend's Day notification banner --- */
 #gfDayBanner{
   position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:110;
   display:none;align-items:center;gap:16px;
-  background:#fff;border:1px solid #ffd1e0;border-radius:20px;
-  padding:18px 22px;box-shadow:0 10px 30px rgba(255,79,139,.28);
+  background:#fff;border:1px solid var(--pink-pale);border-radius:var(--radius-lg);
+  padding:18px 22px;box-shadow:var(--shadow-lg);
   max-width:440px;width:calc(100% - 28px);box-sizing:border-box;
   font-family:'Quicksand',Arial,sans-serif;
   animation:gfDaySlide .4s ease both;
@@ -184,20 +268,22 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 @keyframes gfDaySlide{from{opacity:0;transform:translateX(-50%) translateY(-16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 #gfDayBanner .gfDayIcon{font-size:34px;flex-shrink:0}
 #gfDayBanner .gfDayText{flex:1;text-align:left}
-#gfDayBanner .gfDayText b{display:block;color:#ff4f8b;font-size:18px}
-#gfDayBanner .gfDayText span{display:block;color:#7a2848;font-size:14.5px;line-height:1.5;margin-top:4px}
+#gfDayBanner .gfDayText b{display:block;color:var(--pink);font-size:18px}
+#gfDayBanner .gfDayText span{display:block;color:var(--text-deep);font-size:14.5px;line-height:1.5;margin-top:4px}
+#gfDayGiftsLink{display:inline-block;margin-top:8px;color:var(--pink);font-weight:700;font-size:13.5px;text-decoration:underline}
 #gfDayBanner .gfDayClose{
-  background:none;border:none;color:#c9558a;font-size:24px;line-height:1;
-  cursor:pointer;padding:2px 6px;flex-shrink:0;
+  background:none;border:none;color:var(--text-soft);font-size:24px;line-height:1;
+  cursor:pointer;padding:2px 6px;flex-shrink:0;margin:0;box-shadow:none;
 }
+#gfDayBanner .gfDayClose:hover{transform:none;box-shadow:none;color:var(--pink-dark)}
 
 /* --- lock screen --- */
-#lockScreen{position:fixed;inset:0;background:linear-gradient(#ffeef5,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:20px;text-align:center}
-#lockScreen h2{color:#ff4f8b;margin-bottom:6px}
-#lockScreen p{color:#c9558a;margin-top:0;font-size:14px}
-#pinInput{padding:12px;border-radius:12px;border:2px solid #ff9dbe;font-size:22px;text-align:center;letter-spacing:6px;width:160px;outline:none}
-#pinInput:focus{border-color:#ff4f8b}
-#pinError{color:#e0356b;font-size:13px;min-height:18px;margin-top:8px}
+#lockScreen{position:fixed;inset:0;background:radial-gradient(circle at 50% 0%,#fff5f8 0%,#fff 62%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:20px;text-align:center}
+#lockScreen h2{color:var(--pink);margin-bottom:6px;font-family:'Pacifico',cursive;font-weight:normal;font-size:28px}
+#lockScreen p{color:var(--text-soft);margin-top:0;font-size:14px}
+#pinInput{padding:12px;border-radius:var(--radius-sm);border:2px solid var(--pink-soft);font-size:22px;text-align:center;letter-spacing:6px;width:160px;outline:none;font-family:'Quicksand',Arial,sans-serif}
+#pinInput:focus{border-color:var(--pink)}
+#pinError{color:var(--pink-dark);font-size:13px;min-height:18px;margin-top:8px}
 .shake{animation:shake .4s}
 @keyframes shake{10%,90%{transform:translateX(-4px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
 
@@ -206,35 +292,48 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 @keyframes trailFade{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-80%) scale(.5)}}
 
 /* --- 52 reasons --- */
-#reasonsSection{display:none;margin-top:22px}
-#reasonsBtn{background:#fff;color:#ff4f8b;border:2px solid #ff9dbe}
-#reasonsBtn:hover{background:#fff0f5}
+#reasonsSection{display:none;margin-top:26px}
+#reasonsBtn{background:#fff;color:var(--pink);border:2px solid var(--pink-soft);box-shadow:none}
+#reasonsBtn:hover{background:var(--pink-paler);box-shadow:none}
 #reasonCard{
   display:none;
-  margin:14px auto 0;
+  margin:16px auto 0;
   max-width:420px;
   background:linear-gradient(135deg,#fff5f8,#ffe9f1);
-  border:1px solid #ffd1e0;
-  border-radius:18px;
-  padding:22px;
-  box-shadow:0 6px 20px rgba(255,79,139,.12);
+  border:1px solid var(--pink-pale);
+  border-radius:var(--radius-md);
+  padding:24px;
+  box-shadow:var(--shadow-sm);
 }
-#reasonNumber{font-size:12px;color:#c9558a;letter-spacing:1px;text-transform:uppercase}
-#reasonText{font-size:17px;color:#7a2848;margin:8px 0 0;line-height:1.5}
+#reasonNumber{font-size:12px;color:var(--text-soft);letter-spacing:1px;text-transform:uppercase;font-weight:600}
+#reasonText{font-size:17px;color:var(--text-deep);margin:8px 0 0;line-height:1.55}
 
 #quizLink{margin-top:18px}
+#calendarLink,#giftsLink,#gameLink,#shhhLink,#memoryLink{margin-top:16px}
+#giftsLockedNote,#gameLockedNote{color:var(--text-soft);font-size:12.5px;margin:6px 0 0}
+
+#forever{margin-top:24px}
+#final{
+  color:var(--text-deep);
+  font-family:'Pacifico',cursive;
+  font-weight:normal;
+  font-size:22px;
+  line-height:1.6;
+  margin-top:24px;
+}
 
 /* --- mobile tweaks --- */
 @media (max-width:480px){
-  body{padding:16px 0;box-sizing:border-box;align-items:flex-start}
-  .card{padding:20px 16px;width:94%}
-  h1{font-size:22px}
-  button{padding:10px 18px;font-size:14px}
+  body{padding:20px 0;box-sizing:border-box;align-items:flex-start}
+  .card{padding:26px 18px;width:94%}
+  h1{font-size:24px}
+  button, .btn{padding:11px 20px;font-size:14px}
   #jellyfish svg{width:22px;height:22px}
   #doggo svg{width:30px;height:43px}
   #explorer svg{width:32px;height:44px}
   #jellyBubble,#doggoBubble,#explorerBubble{padding:10px 14px}
   #pinInput{width:130px;font-size:18px}
+  #final{font-size:19px}
 }
 </style></head><body>
 <div id="gfDayBanner">
@@ -401,29 +500,29 @@ img{max-width:100%;border-radius:16px;margin-top:20px}
 </div>
 
 <div id="calendarLink" style="display:none;margin-top:18px">
-  <a href="memories.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Our Memory Calendar 📅</a>
+  <a href="memories.html" class="btn">Our Memory Calendar 📅</a>
 </div>
 
 <div id="giftsLink" style="display:none;margin-top:18px">
-  <a id="giftsBtn" href="gifts.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">A Surprise For You 💘</a>
+  <a id="giftsBtn" href="gifts.html" class="btn">A Surprise For You 💘</a>
   <p id="giftsLockedNote" style="display:none;color:#c9558a;font-size:12.5px;margin:6px 0 0">Unlocks on Girlfriend's Day 💘</p>
 </div>
 
 <div id="gameLink" style="display:none;margin-top:18px">
-  <a id="gameBtn" href="game.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Catch the Hearts 🎮</a>
+  <a id="gameBtn" href="game.html" class="btn">Catch the Hearts 🎮</a>
   <p id="gameLockedNote" style="display:none;color:#c9558a;font-size:12.5px;margin:6px 0 0">Unlocks on Girlfriend's Day 💘</p>
 </div>
 
 <div id="shhhLink" style="display:none;margin-top:18px">
-  <a id="shhhBtn" href="shhh.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Shhh 🤫</a>
+  <a id="shhhBtn" href="shhh.html" class="btn">Shhh 🤫</a>
 </div>
 
 <div id="memoryLink" style="display:none;margin-top:18px">
-  <a id="memoryBtn" href="memory.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Memory Game 💘</a>
+  <a id="memoryBtn" href="memory.html" class="btn">Memory Game 💘</a>
 </div>
 
 <div id="quizLink" style="display:none">
-  <a id="quizBtn" href="quiz.html" style="display:inline-block;padding:12px 24px;border-radius:30px;background:#ff6f9f;color:#fff;text-decoration:none">Who's More Likely? 💘</a>
+  <a id="quizBtn" href="quiz.html" class="btn">Who's More Likely? 💘</a>
 </div>
 
 <div id="forever"><button id="foreverBtn">Forever 💘</button></div>
