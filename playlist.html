@@ -378,9 +378,19 @@ function showArtworkImg(){
     artworkImg.classList.add("loaded");
     artworkEmoji.style.display = "none";
     if(artworkImg.naturalWidth && artworkImg.naturalHeight){
-        // match the frame to the photo's own shape so nothing gets cropped
-        // oddly; clamp so very wide/tall panoramas still look tidy
-        const ratio = Math.min(1.6, Math.max(0.65, artworkImg.naturalWidth / artworkImg.naturalHeight));
+        // size the frame to the photo's real shape (portrait, landscape,
+        // whatever) so nothing gets cropped, while keeping it from taking
+        // over the page if it's a very tall or very wide photo
+        const ratio = Math.min(2.2, Math.max(0.4, artworkImg.naturalWidth / artworkImg.naturalHeight));
+        const maxW = Math.min(300, window.innerWidth * 0.72);
+        const maxH = 380;
+        let w = maxW;
+        let h = w / ratio;
+        if(h > maxH){
+            h = maxH;
+            w = h * ratio;
+        }
+        artwork.style.width = w + "px";
         artwork.style.aspectRatio = ratio;
     }
 }
@@ -388,6 +398,7 @@ function hideArtworkImg(){
     artworkImg.classList.remove("loaded");
     artworkEmoji.style.display = "block";
     artwork.style.aspectRatio = "1 / 1";
+    artwork.style.width = "";
 }
 artworkImg.addEventListener("load", showArtworkImg);
 artworkImg.addEventListener("error", hideArtworkImg);
