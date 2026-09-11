@@ -521,6 +521,10 @@ img{max-width:100%;border-radius:var(--radius-md);margin-top:20px;box-shadow:var
   <a id="memoryBtn" href="memory.html" class="btn">Memory Game 💘</a>
 </div>
 
+<div id="sungPlaylistLink" style="display:none;margin-top:18px">
+  <a id="sungPlaylistBtn" href="playlist.html" class="btn">Songs You Sang For Me 🎤💘</a>
+</div>
+
 <div id="quizLink" style="display:none">
   <a id="quizBtn" href="quiz.html" class="btn">Who's More Likely? 💘</a>
 </div>
@@ -757,6 +761,7 @@ function showRevealedContent(){
     reveal(document.getElementById("giftsLink"));
     reveal(document.getElementById("gameLink"));
     reveal(document.getElementById("quizLink"));
+    reveal(document.getElementById("sungPlaylistLink"));
     setupGirlfriendsDayLocks();
     setupShhhLock();
     setupMemoryLock();
